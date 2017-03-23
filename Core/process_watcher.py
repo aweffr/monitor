@@ -22,7 +22,6 @@ GLOBAL_DEBUG = True
 MB_UNIT = 1024 * 1024
 line_number = 1
 p_memory_val = 0.0
-global_memory = 0.0
 cpu_status = 0.0
 
 
@@ -112,12 +111,16 @@ def process_killer(target_process):
             print("Warning", e)
 
 
-def monitor(target_process, interval, log_file, email_context, email_length=25, memory_limit=50, shareQueue=None):
-    global p_memory_val, global_memory
+def monitor(target_process, interval, log_file,
+            email_context, email_length=25,
+            memory_limit=50, shareQueue=None,
+            keywordDict=dict()):
+    global p_memory_val
     target_process_name = target_process
     q = deque(maxlen=email_length)
     line_number = 0
     isExceed = False
+    emailSent = False
     t1 = time.clock()
 
     with open(log_file, "w") as f:
@@ -150,13 +153,15 @@ def monitor(target_process, interval, log_file, email_context, email_length=25, 
             q.append(logTemoDict)
             if not isExceed:
                 printLogFromDict(f, logTemoDict)
-                f.flush()
+                # f.flush() 不主动flush日志，减轻磁盘负担
             else:  # if isExceed
                 t2 = time.clock()
                 f.writelines("Total Running time: %.3f\n" % (t2 - t1))
                 with open(email_context, "w") as send_file:
                     print_recent_logs(send_file, q)
-                break
+                if not emailSent:
+                    wrapped_email_sender(keywordDict=keywordDict)
+                    emailSent = True
     return 0
 
 
@@ -165,29 +170,44 @@ def process_start(path):
     return p
 
 
+def wrapped_email_sender(keywordDict=dict()):
+    try:
+        email_sender.send_email(from_addr=keywordDict["from_addr"],
+                                password=keywordDict["password"],
+                                smtp_server=keywordDict["smtp_server"],
+                                to_addr=keywordDict["to_addr"],
+                                email_context=keywordDict["email_context"]
+                                )
+    except Exception as e:
+        print(e)
+        return
+
+
+
 if __name__ == "__main__":
     # 找到QQ游览器的id process_id = "qqbrowser.exe"
     # time_interval = int(raw_input("输出间隔(s):"))
     try:
-        d = read_config("config.conf")
+        keywordDict = read_config("config.conf")
     except Exception as e:
-        print("Configation File Wrong!")
+        print("Configuration File Wrong!")
         sys.exit(0)
-    print("Configation Load Complete. Start Monitor.")
+    print("Configuration Load Complete. Start Monitor.")
 
-    monitor(target_process=d["target_process"],
-            interval=d["interval"],
-            log_file=d["log_file"],
-            email_context=d["email_context"],
-            email_length=d["email_length"],
-            memory_limit=d["memory_limit"]
+    monitor(target_process=keywordDict["target_process"],
+            interval=keywordDict["interval"],
+            log_file=keywordDict["log_file"],
+            email_context=keywordDict["email_context"],
+            email_length=keywordDict["email_length"],
+            memory_limit=keywordDict["memory_limit"],
+            keywordDict=keywordDict
             )
 
-    email_sender.send_email(from_addr=d["from_addr"],
-                            password=d["password"],
-                            smtp_server=d["smtp_server"],
-                            to_addr=d["to_addr"],
-                            email_context=d["email_context"])
+    # email_sender.send_email(from_addr=keywordDict["from_addr"],
+    #                         password=keywordDict["password"],
+    #                         smtp_server=keywordDict["smtp_server"],
+    #                         to_addr=keywordDict["to_addr"],
+    #                         email_context=keywordDict["email_context"])
 
     # process_killer(target_process="qqbrowser.exe")
     # process_start("C:\Program Files (x86)\Tencent\QQBrowser\QQBrowser.exe")
