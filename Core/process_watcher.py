@@ -17,11 +17,9 @@ import sys
 from read_config import read_config
 from collections import deque
 
-GLOBAL_DEBUG = False
+GLOBAL_DEBUG = True
 
 MB_UNIT = 1024 * 1024
-line_number = 1
-cpu_status = 0.0
 
 
 def getPidsByName(target_process_name):
@@ -43,24 +41,30 @@ def getCpuState(interval=1):
     """
     间隔1秒获得CPU的全局占用状态。以字符串形式返回
     """
-    global cpu_status
-    cpu_status = psutil.cpu_percent(interval)
-    return cpu_status
-
+    return psutil.cpu_percent(interval)
 
 def getMemoryState():
     """
     获得全局内存的占用状态。以字符串形式返回
     """
-    global global_memory
     memory = psutil.virtual_memory()
-    global_memory = memory.percent
-    line = "Memory: %4s%% %6s/%s" % (
-        memory.percent,
-        str(memory.used // MB_UNIT) + "Mb",
-        str(memory.total // MB_UNIT) + "Mb"
-    )
     return memory.percent, memory.used // MB_UNIT, memory.total // MB_UNIT
+
+
+def getNetworkState():
+    """
+    获得全局网络IO状态
+    :return: 类字典对象‘snetio’, 属性有'bytes_recv', 'bytes_sent', 'packets_recv', 'packets_sent'
+    """
+    io_state = psutil.net_io_counters()
+    return io_state
+
+
+def netWorkStateToString(io_state):
+    outString = "(全局) 发送字节数:%d    接受字节数:%d    发送包数:%d    接受包数:%d" % (
+        io_state.bytes_sent, io_state.bytes_recv, io_state.packets_sent, io_state.packets_recv
+    )
+    return outString
 
 
 def process_state(name, id_list, limit=50):
@@ -70,8 +74,7 @@ def process_state(name, id_list, limit=50):
     """
     if len(id_list) == 0:
         return "找不到进程:%s" % name, False
-    lines = []
-    lines.append("进程名称: %s    总进程数: %d    " % (name, len(id_list)))
+    lines = ["进程名称: %s    总进程数: %d    " % (name, len(id_list)), ]
     memory_cnt = 0.0
     io_read_cnt = 0
     io_write_cnt = 0
@@ -143,6 +146,9 @@ def monitor(target_process, interval, log_file,
                 str(currentMemoryTotal) + "Mb"
             )
             logTempDict['Global Status'] = "CPU:%s%%    %s" % (str(currentCpuState), memoryLogString)
+            # 获取网络IO状态
+            network_status = getNetworkState()
+            logTempDict['NetworkStatus'] = netWorkStateToString(network_status)
             # 目标进程状态
             processIdList = getPidsByName(target_process_name)
             processStatusDict, isExceed = process_state(target_process_name, processIdList, memory_limit)
@@ -157,7 +163,9 @@ def monitor(target_process, interval, log_file,
             q.append(logTempDict)
             if not isExceed:
                 printLogFromDict(f, logTempDict)
-                # f.flush() 不主动flush日志，减轻磁盘负担
+                # 不主动flush日志，减轻磁盘负担
+                if GLOBAL_DEBUG:
+                    f.flush()
             else:  # if isExceed
                 t2 = time.clock()
                 f.writelines("Total Running time: %.3f\n" % (t2 - t1))
