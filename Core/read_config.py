@@ -28,7 +28,7 @@ def read_config(filename):
     d = dict()
     d["from_addr"] = cf.get("email", "from_addr")
     d["password"] = cf.get("email", "password")
-    d["to_addr"] = cf.get("email", "to_addr")
+    d["to_addr"] = cf.get("email", "to_addr").replace(" ", "").split(",")
     d["smtp_server"] = cf.get("email", "smtp")
 
     d["target_process"] = cf.get("moniter", "target")
