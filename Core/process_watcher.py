@@ -16,7 +16,7 @@ import email_sender
 import sys
 from read_config import read_config
 from collections import deque
-
+from pprint import pprint
 GLOBAL_DEBUG = True
 
 MB_UNIT = 1024 * 1024
@@ -73,7 +73,11 @@ def process_state(name, id_list, limit=50):
     根据进程列表返回进程的状态（字符串）和是否超限的布尔值。
     """
     if len(id_list) == 0:
-        return "找不到进程:%s" % name, False
+        processStatusDict = {
+            "process_name": name,
+            "process_total_numbers": 0,
+            "memory_occupied": 0}
+        return processStatusDict, False
     lines = ["进程名称: %s    总进程数: %d    " % (name, len(id_list)), ]
     memory_cnt = 0.0
     io_read_cnt = 0
@@ -100,6 +104,9 @@ def process_state(name, id_list, limit=50):
 
 
 def processStatusToString(statusDict):
+    pprint(statusDict)
+    if statusDict["process_total_numbers"] == 0:
+        return "找不到进程: %s" % statusDict["process_name"]
     lines = ["进程名称: %s    总进程数: %d    " % (statusDict["process_name"], statusDict["process_total_numbers"]),
              "内存占用: %.2f%%\n" % statusDict["memory_occupied"],
              "IO信息：    read:%d    write:%d" % (statusDict["p_read_cnt"], statusDict["p_write_cnt"])]
