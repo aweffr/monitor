@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsView, QGraphicsScene, QGraph
 
 # FigureCanvas inherits QWidget
 class PlotFrame(FigureCanvas):
-    def __init__(self, parent=None, width=4, height=3, dpi=100, shareQueue=None):
+    def __init__(self, parent=None, width=4, height=3, dpi=100, processMemoryLimit=100, shareQueue=None):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes1 = fig.add_subplot(311)  # CPU
         self.axes2 = fig.add_subplot(312)  # GLOBAL MEMORY
@@ -19,6 +19,7 @@ class PlotFrame(FigureCanvas):
         self.axes3.hold(False)
         self.axes2.hold(False)
         self.shareQueue = shareQueue
+        self.processMemoryLimit = processMemoryLimit
 
         super(PlotFrame, self).__init__(fig)
         self.setParent(parent)
@@ -44,7 +45,7 @@ class PlotFrame(FigureCanvas):
 
             self.axes1.set_ylim(bottom=0.0, top=100.0)
             self.axes2.set_ylim(bottom=0.0, top=100.0)
-            self.axes3.set_ylim(bottom=0.0, top=75.0)
+            self.axes3.set_ylim(bottom=0.0, top=(self.processMemoryLimit + 10))
 
             self.axes1.set_ylabel("CPU%")
             self.axes2.set_ylabel("Global Memory%")
@@ -75,6 +76,7 @@ class PlotFrame(FigureCanvas):
 
         # TODO: 当退出窗口时，询问是否后台停止监控。
         # TODO: 当超限时，弹出警告对话框。
+        # TODO: 实现Reset功能
 
 
 if __name__ == '__main__':
