@@ -12,12 +12,12 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsView, QGraphicsScene, QGraph
 class PlotFrame(FigureCanvas):
     def __init__(self, parent=None, width=4, height=3, dpi=100, shareQueue=None):
         fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(313)  # PROCESS MEMORY
-        self.axes2 = fig.add_subplot(311)  # CPU
-        self.axes3 = fig.add_subplot(312)  # GLOBAL MEMORY
-        self.axes.hold(False)
-        self.axes2.hold(False)
+        self.axes1 = fig.add_subplot(311)  # CPU
+        self.axes2 = fig.add_subplot(312)  # GLOBAL MEMORY
+        self.axes3 = fig.add_subplot(313)  # PROCESS MEMORY
+        self.axes1.hold(False)
         self.axes3.hold(False)
+        self.axes2.hold(False)
         self.shareQueue = shareQueue
 
         super(PlotFrame, self).__init__(fig)
@@ -29,26 +29,26 @@ class PlotFrame(FigureCanvas):
                                    QSizePolicy.Expanding,
                                    QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-
         timer = QTimer(self)
         timer.timeout.connect(self.update_figure)
         timer.start(1000)
-
         self.setWindowTitle("Monitor")
 
     def update_figure(self):
         if self.shareQueue:
             # print(self.q)
             xx, yy_cpu, yy_global_memory, yy_memory = self.serialize()
-            self.axes.plot(xx, yy_memory)
-            self.axes2.plot(xx, yy_cpu)
-            self.axes3.plot(xx, yy_global_memory)
-            self.axes.set_ylim(bottom=0.0, top=75.0)
+            self.axes1.plot(xx, yy_cpu)
+            self.axes2.plot(xx, yy_global_memory)
+            self.axes3.plot(xx, yy_memory)
+
+            self.axes1.set_ylim(bottom=0.0, top=100.0)
             self.axes2.set_ylim(bottom=0.0, top=100.0)
-            self.axes3.set_ylim(bottom=0.0, top=100.0)
-            self.axes.set_ylabel("Process Memory%")
-            self.axes2.set_ylabel("CPU%")
-            self.axes3.set_ylabel("Global Memory%")
+            self.axes3.set_ylim(bottom=0.0, top=75.0)
+
+            self.axes1.set_ylabel("CPU%")
+            self.axes2.set_ylabel("Global Memory%")
+            self.axes3.set_ylabel("Process Memory%")
             self.draw()
 
     def serialize(self):
@@ -72,6 +72,9 @@ class PlotFrame(FigureCanvas):
         cp = QDesktopWidget().availableGeometry().bottomRight()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+        # TODO: 当退出窗口时，询问是否后台停止监控。
+        # TODO: 当超限时，弹出警告对话框。
 
 
 if __name__ == '__main__':
