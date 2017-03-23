@@ -1,89 +1,57 @@
 Logical CPU(s) number: 4
 LineNumber : 1
-Time : 2017-03-23 10:20:35
-Global Status : CPU:40.5%    Memory: 72.8% 2929.9453125Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 13     内存占用: 14.39%
+Time : 2017-03-23 10:32:59
+Global Status : CPU:43.0%    Memory: 65.6% 2639.4921875Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 2
-Time : 2017-03-23 10:20:36
-Global Status : CPU:33.7%    Memory: 72.8% 2929.32421875Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 13     内存占用: 14.36%
+Time : 2017-03-23 10:33:00
+Global Status : CPU:25.0%    Memory: 65.6% 2639.359375Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 3
-Time : 2017-03-23 10:20:37
-Global Status : CPU:14.4%    Memory: 72.8% 2928.0546875Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 13     内存占用: 14.36%
+Time : 2017-03-23 10:33:02
+Global Status : CPU:15.6%    Memory: 65.6% 2640.32421875Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 4
-Time : 2017-03-23 10:20:38
-Global Status : CPU:17.9%    Memory: 72.8% 2929.3515625Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 13     内存占用: 14.39%
+Time : 2017-03-23 10:33:03
+Global Status : CPU:25.8%    Memory: 66.1% 2657.41015625Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 5
-Time : 2017-03-23 10:20:40
-Global Status : CPU:24.9%    Memory: 72.8% 2929.66015625Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 13     内存占用: 14.63%
+Time : 2017-03-23 10:33:04
+Global Status : CPU:16.0%    Memory: 66.0% 2655.25390625Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 6
-Time : 2017-03-23 10:20:41
-Global Status : CPU:50.4%    Memory: 74.1% 2979.0703125Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 14     内存占用: 16.01%
+Time : 2017-03-23 10:33:05
+Global Status : CPU:16.0%    Memory: 65.9% 2651.89453125Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 7
-Time : 2017-03-23 10:20:42
-Global Status : CPU:70.8%    Memory: 75.8% 3047.73046875Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 15     内存占用: 18.20%
+Time : 2017-03-23 10:33:07
+Global Status : CPU:21.8%    Memory: 65.9% 2648.8828125Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 8
-Time : 2017-03-23 10:20:44
-Global Status : CPU:87.3%    Memory: 77.5% 3116.76953125Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 16     内存占用: 20.94%
+Time : 2017-03-23 10:33:08
+Global Status : CPU:15.2%    Memory: 66.1% 2657.24609375Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 9
-Time : 2017-03-23 10:20:45
-Global Status : CPU:80.7%    Memory: 79.8% 3208.30078125Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 16     内存占用: 21.87%
+Time : 2017-03-23 10:33:09
+Global Status : CPU:12.1%    Memory: 66.0% 2654.953125Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 10
-Time : 2017-03-23 10:20:46
-Global Status : CPU:54.7%    Memory: 80.0% 3216.73046875Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 17     内存占用: 22.74%
+Time : 2017-03-23 10:33:10
+Global Status : CPU:14.1%    Memory: 65.9% 2651.03515625Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 11
-Time : 2017-03-23 10:20:48
-Global Status : CPU:42.0%    Memory: 80.0% 3218.99609375Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 17     内存占用: 22.75%
+Time : 2017-03-23 10:33:11
+Global Status : CPU:12.3%    Memory: 65.8% 2648.1953125Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 12
-Time : 2017-03-23 10:20:49
-Global Status : CPU:41.5%    Memory: 80.0% 3218.12109375Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 18     内存占用: 23.39%
+Time : 2017-03-23 10:33:13
+Global Status : CPU:17.0%    Memory: 65.8% 2645.64453125Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 13
-Time : 2017-03-23 10:20:50
-Global Status : CPU:81.6%    Memory: 80.5% 3236.72265625Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 19     内存占用: 25.75%
+Time : 2017-03-23 10:33:14
+Global Status : CPU:15.5%    Memory: 65.8% 2646.71875Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%
 LineNumber : 14
-Time : 2017-03-23 10:20:52
-Global Status : CPU:43.8%    Memory: 81.0% 3259.65234375Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 22     内存占用: 27.27%
-LineNumber : 15
-Time : 2017-03-23 10:20:53
-Global Status : CPU:100.0%    Memory: 83.3% 3349.5390625Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 26     内存占用: 31.78%
-LineNumber : 16
-Time : 2017-03-23 10:20:54
-Global Status : CPU:100.0%    Memory: 84.8% 3410.5234375Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 26     内存占用: 33.67%
-LineNumber : 17
-Time : 2017-03-23 10:20:56
-Global Status : CPU:100.0%    Memory: 85.1% 3420.984375Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 25     内存占用: 34.47%
-LineNumber : 18
-Time : 2017-03-23 10:20:57
-Global Status : CPU:73.3%    Memory: 83.0% 3339.27734375Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 25     内存占用: 34.92%
-LineNumber : 19
-Time : 2017-03-23 10:20:58
-Global Status : CPU:75.3%    Memory: 61.8% 2484.67578125Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 3     内存占用: 1.18%
-LineNumber : 20
-Time : 2017-03-23 10:21:00
-Global Status : CPU:32.4%    Memory: 59.7% 2400.75390625Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.17%
-LineNumber : 21
-Time : 2017-03-23 10:21:01
-Global Status : CPU:20.9%    Memory: 59.4% 2389.3359375Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.17%
-LineNumber : 22
-Time : 2017-03-23 10:21:02
-Global Status : CPU:17.5%    Memory: 59.4% 2388.96484375Mb/4022.125Mb
-Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.17%
+Time : 2017-03-23 10:33:15
+Global Status : CPU:50.6%    Memory: 65.8% 2645.12890625Mb/4022.125Mb
+Target Process : 进程名称: qqbrowser.exe    总进程数: 1     内存占用: 0.19%

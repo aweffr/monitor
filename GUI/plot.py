@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsView, QGraphicsScene, QGraph
 
 # FigureCanvas inherits QWidget
 class PlotFrame(FigureCanvas):
-    def __init__(self, parent=None, width=4, height=3, dpi=100, data_q=None):
+    def __init__(self, parent=None, width=4, height=3, dpi=100, shareQueue=None):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(313)  # PROCESS MEMORY
         self.axes2 = fig.add_subplot(311)  # CPU
@@ -18,7 +18,7 @@ class PlotFrame(FigureCanvas):
         self.axes.hold(False)
         self.axes2.hold(False)
         self.axes3.hold(False)
-        self.q = data_q
+        self.shareQueue = shareQueue
 
         super(PlotFrame, self).__init__(fig)
         self.setParent(parent)
@@ -37,7 +37,7 @@ class PlotFrame(FigureCanvas):
         self.setWindowTitle("Monitor")
 
     def update_figure(self):
-        if self.q:
+        if self.shareQueue:
             # print(self.q)
             xx, yy_cpu, yy_global_memory, yy_memory = self.serialize()
             self.axes.plot(xx, yy_memory)
@@ -56,7 +56,7 @@ class PlotFrame(FigureCanvas):
         yy_cpu = []
         yy_global_memory = []
         yy_memory = []
-        for x, y_cpu, y_global_memory, y_memory in self.q:
+        for x, y_cpu, y_global_memory, y_memory in self.shareQueue:
             xx.append(x)
             yy_cpu.append(y_cpu)
             yy_global_memory.append(y_global_memory)
@@ -69,7 +69,7 @@ class PlotFrame(FigureCanvas):
 
     def center(self):
         qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
+        cp = QDesktopWidget().availableGeometry().bottomRight()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
