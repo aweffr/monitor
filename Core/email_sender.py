@@ -31,7 +31,7 @@ def send_email(from_addr, password, smtp_server, to_addr, email_context):
     server.set_debuglevel(False)  # 打印工作流
     server.login(from_addr, password)
     msg = msg_generator(from_addr, to_addr, email_context)
-    server.sendmail(from_addr, [to_addr, ], msg.as_string())
+    server.sendmail(from_addr, to_addr, msg.as_string())
     server.quit()
 
 
@@ -41,5 +41,5 @@ if __name__ == "__main__":
     # 输入SMTP服务器地址:
     smtp_server = "smtp.126.com"
     # 输入收件人地址:
-    to_addr = "aweffr@foxmail.com"
-    send_email(from_addr, password, smtp_server, to_addr, 'log.txt')
+    to_addr = ["aweffr@foxmail.com", "aweffr@126.com"]
+    send_email(from_addr, password, smtp_server, to_addr, 'email_context.txt')
