@@ -61,7 +61,7 @@ def getMemoryState():
         str(memory.used // MB_UNIT) + "Mb",
         str(memory.total // MB_UNIT) + "Mb"
     )
-    return memory.percent, memory.used / MB_UNIT, memory.total / MB_UNIT
+    return memory.percent, memory.used // MB_UNIT, memory.total // MB_UNIT
 
 
 def process_state(name, id_list, limit=50):
