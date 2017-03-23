@@ -15,7 +15,9 @@ import email_sender
 import sys
 from read_config import read_config
 from subprocess import PIPE
-from collections import deque, OrderedDict
+from collections import deque
+
+GLOBAL_DEBUG = True
 
 MB_UNIT = 1024 * 1024
 line_number = 1
@@ -24,7 +26,7 @@ global_memory = 0.0
 cpu_status = 0.0
 
 
-def get_pids_by_name(target_process_name):
+def getPidsByName(target_process_name):
     '''
     由目标进程的名字（字符串）获得进程id，以列表形式返回。
     '''
@@ -35,21 +37,20 @@ def get_pids_by_name(target_process_name):
             if str(psutil.Process(pid).name()).lower() == target_process_name:
                 id_list.append(pid)
         except Exception as e:
-            pass
+            print("Pid: " + str(pid) + "not found.")
     return id_list
 
 
-def get_CPU_state(interval=1):
+def getCpuState(interval=1):
     """
     间隔1秒获得CPU的全局占用状态。以字符串形式返回
     """
     global cpu_status
     cpu_status = psutil.cpu_percent(interval)
-    s = "CPU:  " + str(cpu_status) + "%"
-    return s
+    return cpu_status
 
 
-def get_memory_state():
+def getMemoryState():
     """
     获得全局内存的占用状态。以字符串形式返回
     """
@@ -58,10 +59,10 @@ def get_memory_state():
     global_memory = memory.percent
     line = "Memory: %4s%% %6s/%s" % (
         memory.percent,
-        str(memory.used / MB_UNIT) + "Mb",
-        str(memory.total / MB_UNIT) + "Mb"
+        str(memory.used // MB_UNIT) + "Mb",
+        str(memory.total // MB_UNIT) + "Mb"
     )
-    return line
+    return memory.percent, memory.used / MB_UNIT, memory.total / MB_UNIT
 
 
 def process_state(name, id_list, limit=50):
@@ -88,7 +89,7 @@ def process_state(name, id_list, limit=50):
     return " ".join(lines), memory_exceed
 
 
-def print_log(out_file, d):
+def printLogFromDict(out_file, d):
     # 将单次扫描所得的结果（字典类型）写入文件。
     for key, value in d.items():
         out_file.writelines(key + " : " + value + "\n")
@@ -97,11 +98,11 @@ def print_log(out_file, d):
 def print_recent_logs(out_file, queue):
     # 将最近的记录（大小由队列的长度限值决定）写入文件中。
     for d in queue:
-        print_log(out_file, d)
+        printLogFromDict(out_file, d)
 
 
 def process_killer(target_process):
-    id_list = get_pids_by_name(target_process)
+    id_list = getPidsByName(target_process)
     for pid in id_list:
         try:
             p = psutil.Process(pid)
@@ -109,41 +110,48 @@ def process_killer(target_process):
             p.kill()
         except Exception as e:
             print("Warning", e)
-            continue
 
 
-def monitor(target_process, interval, log_file, email_context, email_length=25, memory_limit=50, q_data=None):
-    global p_memory_val, cpu_status, global_memory
+def monitor(target_process, interval, log_file, email_context, email_length=25, memory_limit=50, shareQueue=None):
+    global p_memory_val, global_memory
     target_process_name = target_process
     q = deque(maxlen=email_length)
     line_number = 0
-    is_exceed = False
+    isExceed = False
     t1 = time.clock()
 
     with open(log_file, "w") as f:
         f.writelines("Logical CPU(s) number: %d\n" % psutil.cpu_count())
         while True:
             # log_temp为单次记录信息的项
-            log_temp = dict()
+            logTemoDict = dict()
             line_number += 1
-            log_temp['LineNumber'] = str(line_number)
+            logTemoDict['LineNumber'] = str(line_number)
             # 时间
-            log_temp['Time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            logTemoDict['Time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             # 全局CPU和内存状态
-            log_temp['Global Status'] = get_CPU_state(interval=interval) + "    " + get_memory_state()
+            currentCpuState = getCpuState(interval=interval)
+            currentMemoryPercent, currentMemoryUsed, currentMemoryTotal = getMemoryState()
+            memoryLogString = "Memory: %4s%% %6s/%s" % (
+                str(currentMemoryPercent),
+                str(currentMemoryUsed) + "Mb",
+                str(currentMemoryTotal) + "Mb"
+            )
+            logTemoDict['Global Status'] = "CPU:%s%%    %s" % (str(currentCpuState), memoryLogString)
             # 目标进程状态
-            id_list = get_pids_by_name(target_process_name)
-            memory_str, is_exceed = process_state(target_process_name, id_list, memory_limit)
-            log_temp['Target Process'] = memory_str
-            if q_data is not None:
-                q_data.append((line_number, cpu_status, global_memory, p_memory_val), )
-                print(q_data[-1])
+            processIdList = getPidsByName(target_process_name)
+            memoryString, isExceed = process_state(target_process_name, processIdList, memory_limit)
+            logTemoDict['Target Process'] = memoryString
+            if shareQueue is not None:
+                shareQueue.append((line_number, currentCpuState, currentMemoryPercent, p_memory_val), )
+                if GLOBAL_DEBUG:
+                    print(shareQueue[-1])
             # 将本次记录项放入限长队列
-            q.append(log_temp)
-            if not is_exceed:
-                print_log(f, log_temp)
+            q.append(logTemoDict)
+            if not isExceed:
+                printLogFromDict(f, logTemoDict)
                 f.flush()
-            else:  # if is_exceed
+            else:  # if isExceed
                 t2 = time.clock()
                 f.writelines("Total Running time: %.3f\n" % (t2 - t1))
                 with open(email_context, "w") as send_file:
