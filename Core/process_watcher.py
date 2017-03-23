@@ -21,7 +21,6 @@ GLOBAL_DEBUG = False
 
 MB_UNIT = 1024 * 1024
 line_number = 1
-p_memory_val = 0.0
 cpu_status = 0.0
 
 
@@ -69,12 +68,13 @@ def process_state(name, id_list, limit=50):
     输入进程的名字，id列表。
     根据进程列表返回进程的状态（字符串）和是否超限的布尔值。
     """
-    global p_memory_val
     if len(id_list) == 0:
         return "找不到进程:%s" % name, False
     lines = []
     lines.append("进程名称: %s    总进程数: %d    " % (name, len(id_list)))
     memory_cnt = 0.0
+    io_read_cnt = 0
+    io_write_cnt = 0
     for pid in id_list:
         try:
             p = psutil.Process(pid)
@@ -82,10 +82,25 @@ def process_state(name, id_list, limit=50):
             print("Waring:", e)
             continue
         memory_cnt += p.memory_percent()
-    p_memory_val = memory_cnt
+        io_read_cnt += p.io_counters().read_count
+        io_write_cnt += p.io_counters().write_count
     lines.append("内存占用: %.2f%%" % memory_cnt)
     memory_exceed = (memory_cnt > limit)
-    return " ".join(lines), memory_exceed
+    processStatusDict = {
+        "process_name": name,
+        "memory_occupied": memory_cnt,
+        "process_total_numbers": len(id_list),
+        "p_read_cnt": io_read_cnt,
+        "p_write_cnt": io_write_cnt
+    }
+    return processStatusDict, memory_exceed
+
+
+def processStatusToString(statusDict):
+    lines = ["进程名称: %s    总进程数: %d    " % (statusDict["process_name"], statusDict["process_total_numbers"]),
+             "内存占用: %.2f%%\n" % statusDict["memory_occupied"],
+             "IO信息：    read:%d    write:%d" % (statusDict["p_read_cnt"], statusDict["p_write_cnt"])]
+    return " ".join(lines)
 
 
 def printLogFromDict(out_file, d):
@@ -100,13 +115,10 @@ def print_recent_logs(out_file, queue):
         printLogFromDict(out_file, d)
 
 
-
-
 def monitor(target_process, interval, log_file,
             email_context, email_length=25,
             memory_limit=50, shareQueue=None,
             keywordDict=dict()):
-    global p_memory_val
     target_process_name = target_process
     q = deque(maxlen=email_length)
     line_number = 0
@@ -117,11 +129,11 @@ def monitor(target_process, interval, log_file,
         f.writelines("Logical CPU(s) number: %d\n" % psutil.cpu_count())
         while True:
             # log_temp为单次记录信息的项
-            logTemoDict = dict()
+            logTempDict = dict()
             line_number += 1
-            logTemoDict['LineNumber'] = str(line_number)
+            logTempDict['LineNumber'] = str(line_number)
             # 时间
-            logTemoDict['Time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            logTempDict['Time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             # 全局CPU和内存状态
             currentCpuState = getCpuState(interval=interval)
             currentMemoryPercent, currentMemoryUsed, currentMemoryTotal = getMemoryState()
@@ -130,19 +142,21 @@ def monitor(target_process, interval, log_file,
                 str(currentMemoryUsed) + "Mb",
                 str(currentMemoryTotal) + "Mb"
             )
-            logTemoDict['Global Status'] = "CPU:%s%%    %s" % (str(currentCpuState), memoryLogString)
+            logTempDict['Global Status'] = "CPU:%s%%    %s" % (str(currentCpuState), memoryLogString)
             # 目标进程状态
             processIdList = getPidsByName(target_process_name)
-            memoryString, isExceed = process_state(target_process_name, processIdList, memory_limit)
-            logTemoDict['Target Process'] = memoryString
+            processStatusDict, isExceed = process_state(target_process_name, processIdList, memory_limit)
+            logTempDict['Target Process'] = processStatusToString(processStatusDict)
             if shareQueue is not None:
-                shareQueue.append((line_number, currentCpuState, currentMemoryPercent, p_memory_val), )
+                shareQueue.append(
+                    (line_number, currentCpuState, currentMemoryPercent, processStatusDict["memory_occupied"]),
+                )
                 if GLOBAL_DEBUG:
                     print("DEBUG:", shareQueue[-1])
             # 将本次记录项放入限长队列
-            q.append(logTemoDict)
+            q.append(logTempDict)
             if not isExceed:
-                printLogFromDict(f, logTemoDict)
+                printLogFromDict(f, logTempDict)
                 # f.flush() 不主动flush日志，减轻磁盘负担
             else:  # if isExceed
                 t2 = time.clock()
@@ -151,6 +165,7 @@ def monitor(target_process, interval, log_file,
                     print_recent_logs(send_file, q)
                 if not emailSent:
                     wrapped_email_sender(keywordDict=keywordDict)
+                    print("Waring Email Sent!")
                     emailSent = True
     return 0
 
@@ -171,7 +186,6 @@ def wrapped_email_sender(keywordDict=dict()):
     except Exception as e:
         print(e)
         return
-
 
 
 if __name__ == "__main__":
