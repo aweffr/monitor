@@ -9,7 +9,6 @@ version 0.1:
 基于python3.6实现基本功能。
 '''
 from subprocess import PIPE
-
 import psutil
 import time
 import email_sender
@@ -17,9 +16,13 @@ import sys
 from read_config import read_config
 from collections import deque
 from pprint import pprint
-GLOBAL_DEBUG = True
+
+GLOBAL_DEBUG = False
 
 MB_UNIT = 1024 * 1024
+
+
+# TODO 把日志分七天打印
 
 
 def getPidsByName(target_process_name):
@@ -78,7 +81,6 @@ def process_state(name, id_list, limit=50):
             "process_total_numbers": 0,
             "memory_occupied": 0}
         return processStatusDict, False
-    lines = ["进程名称: %s    总进程数: %d    " % (name, len(id_list)), ]
     memory_cnt = 0.0
     io_read_cnt = 0
     io_write_cnt = 0
@@ -91,7 +93,6 @@ def process_state(name, id_list, limit=50):
         memory_cnt += p.memory_percent()
         io_read_cnt += p.io_counters().read_count
         io_write_cnt += p.io_counters().write_count
-    lines.append("内存占用: %.2f%%" % memory_cnt)
     memory_exceed = (memory_cnt > limit)
     processStatusDict = {
         "process_name": name,
@@ -104,7 +105,8 @@ def process_state(name, id_list, limit=50):
 
 
 def processStatusToString(statusDict):
-    pprint(statusDict)
+    if GLOBAL_DEBUG:
+        pprint(statusDict)
     if statusDict["process_total_numbers"] == 0:
         return "找不到进程: %s" % statusDict["process_name"]
     lines = ["进程名称: %s    总进程数: %d    " % (statusDict["process_name"], statusDict["process_total_numbers"]),
