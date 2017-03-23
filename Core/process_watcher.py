@@ -8,16 +8,16 @@
 version 0.1:
 基于python3.6实现基本功能。
 '''
+from subprocess import PIPE
 
 import psutil
 import time
 import email_sender
 import sys
 from read_config import read_config
-from subprocess import PIPE
 from collections import deque
 
-GLOBAL_DEBUG = True
+GLOBAL_DEBUG = False
 
 MB_UNIT = 1024 * 1024
 line_number = 1
@@ -100,15 +100,6 @@ def print_recent_logs(out_file, queue):
         printLogFromDict(out_file, d)
 
 
-def process_killer(target_process):
-    id_list = getPidsByName(target_process)
-    for pid in id_list:
-        try:
-            p = psutil.Process(pid)
-            # if p.parent().name() == target_process:
-            p.kill()
-        except Exception as e:
-            print("Warning", e)
 
 
 def monitor(target_process, interval, log_file,
@@ -119,7 +110,6 @@ def monitor(target_process, interval, log_file,
     target_process_name = target_process
     q = deque(maxlen=email_length)
     line_number = 0
-    isExceed = False
     emailSent = False
     t1 = time.clock()
 
@@ -148,7 +138,7 @@ def monitor(target_process, interval, log_file,
             if shareQueue is not None:
                 shareQueue.append((line_number, currentCpuState, currentMemoryPercent, p_memory_val), )
                 if GLOBAL_DEBUG:
-                    print(shareQueue[-1])
+                    print("DEBUG:", shareQueue[-1])
             # 将本次记录项放入限长队列
             q.append(logTemoDict)
             if not isExceed:
@@ -191,7 +181,7 @@ if __name__ == "__main__":
         keywordDict = read_config("config.conf")
     except Exception as e:
         print("Configuration File Wrong!")
-        sys.exit(0)
+        sys.exit(-1)
     print("Configuration Load Complete. Start Monitor.")
 
     monitor(target_process=keywordDict["target_process"],
@@ -208,6 +198,3 @@ if __name__ == "__main__":
     #                         smtp_server=keywordDict["smtp_server"],
     #                         to_addr=keywordDict["to_addr"],
     #                         email_context=keywordDict["email_context"])
-
-    # process_killer(target_process="qqbrowser.exe")
-    # process_start("C:\Program Files (x86)\Tencent\QQBrowser\QQBrowser.exe")
