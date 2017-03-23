@@ -40,10 +40,10 @@ def GUI(configDict, shareQueue=None):
     app.exec_()
 
 
-def processKeeper(configDict):
+def processKeeper(configDict, scanTimeCycle=5):
     while True:
         blackList, whiteList = [], []
-        time.sleep(2)
+        time.sleep(scanTimeCycle)
         if 'black_list' in configDict:
             blackList = configDict['black_list']
         if 'white_list' in configDict:
@@ -65,7 +65,8 @@ if __name__ == "__main__":
 
     t1 = threading.Thread(target=watcher, kwargs={"configDict": configDict, "shareQueue": shareQueue})
     t2 = threading.Thread(target=GUI, kwargs={"configDict": configDict, "shareQueue": shareQueue})
-    t3 = threading.Thread(target=processKeeper, kwargs={"configDict": configDict})
+    t3 = threading.Thread(target=processKeeper, kwargs={"configDict": configDict,
+                                                        "scanTimeCycle": 5})
     t1.start()
     t2.start()
     t3.start()
