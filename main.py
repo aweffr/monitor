@@ -1,46 +1,42 @@
 from collections import deque
 import sys
-
 sys.path.extend(["./Core", "./GUI"])
 import process_watcher
 import process_keeper
-import email_sender
 import threading, time
 import read_config
 from PyQt5.QtWidgets import QApplication
 import MonitorGUI
 
 
-def watcher(configDict, shareQueue=None):
+# TODO: 定制邮件发送的（频次）参数
+
+def watcher(configDict, shareQueue=None, shareEvent=None):
     process_watcher.monitor(
         target_process=configDict["target_process"],
         interval=configDict["interval"],
-        log_file=configDict["log_file"],
+        log_path=configDict["log_path"],
         email_context=configDict["email_context"],
         email_length=configDict["email_length"],
         memory_limit=configDict["memory_limit"],
+        log_interval=configDict["log_interval"],
         shareQueue=shareQueue,
+        quitEvent=shareEvent,
         keywordDict=configDict
     )
 
-    # email_sender.send_email(from_addr=configDict["from_addr"],
-    #                         password=configDict["password"],
-    #                         smtp_server=configDict["smtp_server"],
-    #                         to_addr=configDict["to_addr"],
-    #                         email_context=configDict["email_context"])
-    return 0
 
-
-def GUI(configDict, shareQueue=None):
+def GUI(configDict, shareQueue=None, shareEvent=None):
     app = QApplication(sys.argv)
     mainWindow = MonitorGUI.PlotFrame(
         width=6, height=3, shareQueue=shareQueue,
-        processMemoryLimit=configDict["memory_limit"])
+        processMemoryLimit=configDict["memory_limit"],
+        shareEvent=shareEvent)
     mainWindow.show()
     app.exec_()
 
 
-def processKeeper(configDict, scanTimeCycle=5):
+def processKeeper(configDict, scanTimeCycle=5, shareEvent=None):
     while True:
         blackList, whiteList = [], []
         time.sleep(scanTimeCycle)
@@ -52,6 +48,8 @@ def processKeeper(configDict, scanTimeCycle=5):
             process_keeper.process_killer(pName)
         for pName in whiteList:
             pass
+        if shareEvent.isSet():
+            break
 
 
 if __name__ == "__main__":
@@ -63,14 +61,20 @@ if __name__ == "__main__":
         sys.exit(-1)
     print("Configuration Load Complete. Start Monitor.")
 
-    t1 = threading.Thread(target=watcher, kwargs={"configDict": configDict, "shareQueue": shareQueue})
-    t2 = threading.Thread(target=GUI, kwargs={"configDict": configDict, "shareQueue": shareQueue})
+    e = threading.Event()
+    t1 = threading.Thread(target=watcher,
+                          kwargs={"configDict": configDict, "shareQueue": shareQueue,
+                                  "shareEvent": e})
+    t2 = threading.Thread(target=GUI,
+                          kwargs={"configDict": configDict, "shareQueue": shareQueue,
+                                  "shareEvent": e})
     t3 = threading.Thread(target=processKeeper, kwargs={"configDict": configDict,
-                                                        "scanTimeCycle": 5})
+                                                        "scanTimeCycle": 5,
+                                                        "shareEvent": e})
     t1.start()
     t2.start()
     t3.start()
     t1.join()
     t2.join()
     t3.join()
-    print("Exit!")
+    # input("Press any key to exit!")
