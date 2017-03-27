@@ -2,7 +2,7 @@ from collections import deque
 import sys
 
 sys.path.extend(["./Core", "./GUI"])
-import process_watcher
+import process_monitor
 import process_keeper
 import threading, time
 import read_config
@@ -14,7 +14,7 @@ import time
 # TODO: 定制邮件发送的（频次）参数
 
 def watcher(configDict, shareQueue=None, quitEvent=None, emailEvent=None):
-    process_watcher.monitor(
+    process_monitor.monitor(
         target_process=configDict["target_process"],
         interval=configDict["interval"],
         log_path=configDict["log_path"],
