@@ -11,21 +11,20 @@ smtp = smtp.126.com
 
 [moniter]
 target = qqbrowser.exe
-memory_limit = 25
+memory_limit = 40
 interval = 1.0
 
 [file]
-log_file = ./Log/log.txt
+log_path = ./Log/
+log_interval = 7
 email_context = ./Log/email_context.txt
 email_length = 40
 
-[whitelist]
-process1 = java.exe
-process2 = javaw.exe
-process3 = explorer.exe
+[white_list]
+process = java.exe, javaw.exe, explorer.exe
 
-[blacklist]
-process1 = notepad.exe
+[black_list]
+process = notepad.exe
 '''
 
 
@@ -44,7 +43,8 @@ def read_config(filename):
     d["memory_limit"] = float(cf.get("moniter", "memory_limit"))
     d["interval"] = float(cf.get("moniter", "interval"))
 
-    d["log_file"] = cf.get("file", "log_file")
+    d["log_path"] = cf.get("file", "log_path")
+    d["log_interval"] = int(cf.get("file", "log_interval"))
     d["email_context"] = cf.get("file", "email_context")
     d["email_length"] = int(cf.get("file", "email_length"))
 
@@ -58,8 +58,10 @@ def read_config(filename):
 
 if __name__ == "__main__":
     from pprint import pprint
+    import os
 
-    d = read_config("../config.conf")
+    os.chdir("..")
+    d = read_config("./config.conf")
     pprint(d)
     #
     # d2 =
