@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4423c44b-6002-43a7-96fb-cd1f70211c0c" name="Default" comment="将扫描黑名单的次数改成10次。">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Xlsx/dict_to_xlsx.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Core/process_watcher.py" afterPath="$PROJECT_DIR$/Core/process_monitor.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Log/email_context.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/multi_thread_demo.py" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/Moniter.iml" afterPath="$PROJECT_DIR$/.idea/Moniter.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Core/process_keeper.py" afterPath="$PROJECT_DIR$/Core/process_keeper.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Core/email_sender.py" afterPath="$PROJECT_DIR$/Core/email_sender.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Core/process_monitor.py" afterPath="$PROJECT_DIR$/Core/process_monitor.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Xlsx/dict_to_xlsx.py" afterPath="$PROJECT_DIR$/Xlsx/dict_to_xlsx.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config.conf" afterPath="$PROJECT_DIR$/config.conf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
     </list>
     <ignored path="Moniter.iws" />
@@ -25,7 +29,44 @@
     <favorites_list name="Moniter" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="600" />
+    <leaf>
+      <file leaf-file-name="process_monitor.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Core/process_monitor.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="300">
+              <caret line="193" column="45" lean-forward="false" selection-start-line="193" selection-start-column="45" selection-end-line="193" selection-end-column="45" />
+              <folding>
+                <marker date="1490605789641" expanded="true" signature="4057:6726" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="4485:6713" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="5424:5654" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="5816:5975" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="5989:6399" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="6163:6399" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="6455:6524" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="6573:6713" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="6774:7190" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="6783:7131" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="7158:7190" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="7219:8335" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="7224:7314" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="7471:7535" ph="..." />
+                <marker date="1490605789641" expanded="true" signature="8004:8335" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="read_config.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Core/read_config.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="61" column="32" lean-forward="false" selection-start-line="61" selection-start-column="32" selection-end-line="61" selection-end-column="32" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -65,12 +106,12 @@
         <option value="$PROJECT_DIR$/config.conf" />
         <option value="$PROJECT_DIR$/GUI/MonitorGUI.py" />
         <option value="$PROJECT_DIR$/Core/email_sender.py" />
-        <option value="$PROJECT_DIR$/Core/read_config.py" />
         <option value="$PROJECT_DIR$/Core/process_watcher.py" />
         <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/Xlsx/simple1.py" />
         <option value="$PROJECT_DIR$/Xlsx/dict_to_xlsx.py" />
         <option value="$PROJECT_DIR$/Core/process_monitor.py" />
+        <option value="$PROJECT_DIR$/Core/read_config.py" />
       </list>
     </option>
   </component>
@@ -115,8 +156,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -209,7 +250,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.process_monitor">
+  <component name="RunManager" selected="Python.read_config">
     <configuration default="false" name="read_config" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -405,11 +446,11 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.process_monitor" />
-        <item index="1" class="java.lang.String" itemvalue="Python.simple1" />
-        <item index="2" class="java.lang.String" itemvalue="Python.main" />
-        <item index="3" class="java.lang.String" itemvalue="Python.log_file_name" />
-        <item index="4" class="java.lang.String" itemvalue="Python.read_config" />
+        <item index="0" class="java.lang.String" itemvalue="Python.read_config" />
+        <item index="1" class="java.lang.String" itemvalue="Python.main" />
+        <item index="2" class="java.lang.String" itemvalue="Python.process_monitor" />
+        <item index="3" class="java.lang.String" itemvalue="Python.simple1" />
+        <item index="4" class="java.lang.String" itemvalue="Python.log_file_name" />
       </list>
     </recent_temporary>
     <configuration default="true" type="tests" factoryName="Attests">
@@ -712,7 +753,35 @@
       <option name="project" value="LOCAL" />
       <updated>1490599824101</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="将process_watcher重命名成process_monitor">
+      <created>1490603870393</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1490603870393</updated>
+    </task>
+    <task id="LOCAL-00040" summary="子模块文件重命名。">
+      <created>1490603897563</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1490603897563</updated>
+    </task>
+    <task id="LOCAL-00041" summary="增加gitignore配置文件">
+      <created>1490603994520</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1490603994520</updated>
+    </task>
+    <task id="LOCAL-00042" summary="add *.xlsx to .gitignore">
+      <created>1490604059497</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1490604059497</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TodoView">
@@ -727,16 +796,16 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1384" height="888" extended-state="6" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19864048" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20166163" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3275862" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32949153" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26392573" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3275862" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3291474" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26392573" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294837" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -763,10 +832,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="调整code异常时返回的值" />
-    <MESSAGE value="调整读取配置文件的模块，支持黑白名单" />
-    <MESSAGE value="支持黑白名单的对应测试生成文件" />
-    <MESSAGE value="修改日志格式 将memory转成Mb单位的过程调整为整除" />
     <MESSAGE value="对processKeeper函数设置一个轮询的间隔" />
     <MESSAGE value="1.  logTemoDict是一个typo，已修复&#10;2.  进一步重构，增加监控进程的IO的功能" />
     <MESSAGE value="增加监控全局网络IO的功能" />
@@ -788,7 +853,11 @@
     <MESSAGE value="将重设邮件状态作为新线程。" />
     <MESSAGE value="给config加上中文注解" />
     <MESSAGE value="试用XlsxWriter" />
-    <option name="LAST_COMMIT_MESSAGE" value="试用XlsxWriter" />
+    <MESSAGE value="将process_watcher重命名成process_monitor" />
+    <MESSAGE value="子模块文件重命名。" />
+    <MESSAGE value="增加gitignore配置文件" />
+    <MESSAGE value="add *.xlsx to .gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="add *.xlsx to .gitignore" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -798,21 +867,10 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="44" column="37" lean-forward="false" selection-start-line="44" selection-start-column="37" selection-end-line="44" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/GUI/MonitorGUI.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -821,7 +879,21 @@
         <state relative-caret-position="0">
           <caret line="157" column="0" lean-forward="false" selection-start-line="157" selection-start-column="0" selection-end-line="157" selection-end-column="0" />
           <folding>
-            <element signature="e#145#172#0" expanded="true" />
+            <marker date="1490605789641" expanded="true" signature="4057:6726" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="4485:6713" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="5424:5654" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="5816:5975" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="5989:6399" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6163:6399" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6455:6524" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6573:6713" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6774:7190" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6783:7131" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="7158:7190" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="7219:8335" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="7224:7314" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="7471:7535" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="8004:8335" ph="..." />
           </folding>
         </state>
       </provider>
@@ -838,7 +910,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#0#29#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -847,7 +919,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="36" column="18" lean-forward="false" selection-start-line="36" selection-start-column="18" selection-end-line="36" selection-end-column="18" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1059,26 +1130,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Core/read_config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="34" column="9" lean-forward="true" selection-start-line="34" selection-start-column="9" selection-end-line="34" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.conda/envs/py36/Lib/configparser.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="12958">
-          <caret line="689" column="38" lean-forward="false" selection-start-line="689" selection-start-column="38" selection-end-line="689" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/GUI/MonitorGUI.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1463">
           <caret line="85" column="34" lean-forward="false" selection-start-line="85" selection-start-column="34" selection-end-line="85" selection-end-column="34" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1086,7 +1141,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="266">
           <caret line="14" column="8" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="8" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1095,7 +1149,7 @@
         <state relative-caret-position="910">
           <caret line="80" column="15" lean-forward="false" selection-start-line="80" selection-start-column="15" selection-end-line="80" selection-end-column="15" />
           <folding>
-            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#0#29#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1104,7 +1158,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="38">
           <caret line="2" column="7" lean-forward="false" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1112,7 +1165,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="176">
           <caret line="159" column="8" lean-forward="false" selection-start-line="159" selection-start-column="8" selection-end-line="159" selection-end-column="8" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1124,21 +1176,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Core/process_monitor.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2230">
-          <caret line="247" column="34" lean-forward="false" selection-start-line="247" selection-start-column="34" selection-end-line="247" selection-end-column="34" />
-          <folding>
-            <element signature="e#145#172#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Xlsx/dict_to_xlsx.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="19">
           <caret line="1" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1146,6 +1187,53 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="19">
           <caret line="1" column="17" lean-forward="true" selection-start-line="1" selection-start-column="17" selection-end-line="1" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.swp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Core/process_monitor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="193" column="45" lean-forward="false" selection-start-line="193" selection-start-column="45" selection-end-line="193" selection-end-column="45" />
+          <folding>
+            <marker date="1490605789641" expanded="true" signature="4057:6726" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="4485:6713" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="5424:5654" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="5816:5975" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="5989:6399" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6163:6399" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6455:6524" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6573:6713" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6774:7190" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="6783:7131" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="7158:7190" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="7219:8335" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="7224:7314" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="7471:7535" ph="..." />
+            <marker date="1490605789641" expanded="true" signature="8004:8335" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.conda/envs/py36/Lib/configparser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="823" column="46" lean-forward="true" selection-start-line="823" selection-start-column="46" selection-end-line="823" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Core/read_config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="61" column="32" lean-forward="false" selection-start-line="61" selection-start-column="32" selection-end-line="61" selection-end-column="32" />
           <folding />
         </state>
       </provider>

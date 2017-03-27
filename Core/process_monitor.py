@@ -8,7 +8,6 @@
 version 0.1:
 基于python3.6实现基本功能。
 '''
-from subprocess import PIPE
 import psutil
 import time
 import email_sender

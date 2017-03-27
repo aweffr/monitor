@@ -31,7 +31,12 @@ def send_email(from_addr, password, smtp_server, to_addr, email_context):
     server.set_debuglevel(False)  # 打印工作流
     server.login(from_addr, password)
     msg = msg_generator(from_addr, to_addr, email_context)
-    server.sendmail(from_addr, to_addr, msg.as_string())
+    for i in range(3):
+        try:
+            server.sendmail(from_addr, to_addr, msg.as_string())
+            break
+        except Exception as e:
+            print("Fail to send Email:", e)
     server.quit()
 
 
