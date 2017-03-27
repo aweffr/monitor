@@ -40,3 +40,4 @@ Core/Log/
 Core/__pycache__/
 GUI/__pycache__/
 Log
+*.xlsx
