@@ -201,10 +201,10 @@ def monitor(target_process, interval, log_path,
             if GLOBAL_DEBUG or (line_number % 60 == 0):
                 f.flush()
         else:  # if isExceed
-            f.writelines("Total Running time: %.3f\n" % (monitorEndTime - monitorStartTime))
             with open(email_context, "w") as send_file:
                 print_recent_logs(send_file, emailMessageQueue)
             if not emailEvent.isSet():
+                f.writelines("Total Running time: %.3f\n" % (monitorEndTime - monitorStartTime))
                 wrapped_email_sender(keywordDict=keywordDict)
                 print("Waring Email Sent!")
                 emailEvent.set()
