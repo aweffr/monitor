@@ -146,7 +146,7 @@ def need_to_switch(t1, t2, log_interval):
 def monitor(target_process, interval, log_path,
             email_context, email_length=25,
             memory_limit=50, shareQueue=None,
-            quitEvent=None,
+            quitEvent=None, emailEvent=None,
             keywordDict=dict(),
             log_interval=7):
     target_process_name = target_process
@@ -204,11 +204,11 @@ def monitor(target_process, interval, log_path,
             f.writelines("Total Running time: %.3f\n" % (monitorEndTime - monitorStartTime))
             with open(email_context, "w") as send_file:
                 print_recent_logs(send_file, emailMessageQueue)
-            if not emailSent:
+            if not emailEvent.isSet():
                 wrapped_email_sender(keywordDict=keywordDict)
                 print("Waring Email Sent!")
-                emailSent = True
-        if quitEvent != None and quitEvent.isSet():
+                emailEvent.set()
+        if quitEvent is not None and quitEvent.isSet():
             continueFlag = False  # <==> break
             f.close()
         if need_to_switch(t1, t2, log_interval):
