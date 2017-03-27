@@ -4,14 +4,12 @@ import sys
 sys.path.extend(["./Core", "./GUI"])
 import process_watcher
 import process_keeper
-import threading, time
+import threading
 import read_config
 from PyQt5.QtWidgets import QApplication
 import MonitorGUI
 import time
 
-
-# TODO: 定制邮件发送的（频次）参数
 
 def watcher(configDict, shareQueue=None, quitEvent=None, emailEvent=None):
     process_watcher.monitor(
@@ -43,7 +41,7 @@ def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
     if 'black_list' not in configDict and 'white_list' not in configDict:
         return
     # 有白名单和黑名单，进入名单监控循环。
-    while True:
+    while quitEvent is not None and (not quitEvent.isSet()):
         blackList, whiteList = [], []
         time.sleep(scanTimeCycle)
         if 'black_list' in configDict:
@@ -54,9 +52,18 @@ def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
             process_keeper.process_killer(pName)
         for pName in whiteList:
             pass
-        if quitEvent.isSet():
-            break
 
+
+def emailSenderReset(configDict, emailEvent, quitEvent=None):
+    while quitEvent is not None and (not quitEvent.isSet()):
+        if emailEvent.isSet():
+            t1 = time.time()
+            while time.time() - t1 < configDict['send_interval']:
+                time.sleep(30)
+                emailEvent.clear()
+                break
+        else:
+            time.sleep(30)
 
 if __name__ == "__main__":
     shareQueue = deque(maxlen=25)
@@ -78,17 +85,17 @@ if __name__ == "__main__":
     t3 = threading.Thread(target=processKeeper, kwargs={"configDict": configDict,
                                                         "scanTimeCycle": 10,
                                                         "quitEvent": quitEvent})
+    t4 = threading.Thread(target=emailSenderReset, kwargs={"configDict": configDict,
+                                                           "emailEvent": emailEvent,
+                                                           "quitEvent": quitEvent})
     t1.start()
     t2.start()
     t3.start()
-    while True:
-        # print("Working!");
-        time.sleep(configDict['send_interval'])
-        if emailEvent.isSet():
-            emailEvent.clear()
-
+    t4.start()
     t1.join()
     t2.join()
     t3.join()
+    t4.join()
     print("Exit!")
+    sys.exit(0)
     # input("Press any key to exit!")
