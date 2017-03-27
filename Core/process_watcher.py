@@ -119,11 +119,10 @@ def processStatusToString(statusDict):
     if GLOBAL_DEBUG:
         pprint(statusDict)
     if statusDict["process_total_numbers"] == 0:
-        return "找不到进程: %s" % statusDict["process_name"]
-    lines = ["进程名称: %s    总进程数: %d    " % (statusDict["process_name"], statusDict["process_total_numbers"]),
-             "内存占用: %.2f%%\n" % statusDict["memory_occupied"],
-             "IO信息：    read:%d    write:%d" % (statusDict["p_read_cnt"], statusDict["p_write_cnt"])]
-    return " ".join(lines)
+        return "找不到进程: {process_name}".format(**statusDict)
+    lines = """进程名称: {process_name}    总进程数: {process_total_numbers}    内存占用: {memory_occupied:.2f}%
+    IO信息：    read:{p_read_cnt}    write:{p_write_cnt}""".format(**statusDict)
+    return lines
 
 
 def printLogFromDict(out_file, d):
@@ -156,12 +155,18 @@ def monitor(target_process, interval, log_path,
     emailSent = False
     continueFlag = True
     monitorStartTime = time.clock()
+    if log_interval == 7:
+        log_opt = 'week'
+    elif log_interval == 30:
+        log_opt = 'month'
+    else:
+        log_opt = 'day'
     t1 = time.localtime()
-    logFileName = time.strftime("%Y-%m-%d.txt", time.localtime())
+    logFileName = log_file_name.log_file_name(opt=log_opt)
     f = open(log_path + logFileName, 'w')
+    f.writelines("Logical CPU(s) number: %d\n" % psutil.cpu_count())
     while continueFlag is True:
-        f.writelines("Logical CPU(s) number: %d\n" % psutil.cpu_count())
-        # log_temp为单次记录信息的项
+        # logTempDict 为单次记录信息的项
         logTempDict = dict()
         line_number += 1
         logTempDict['LineNumber'] = str(line_number)
@@ -205,16 +210,12 @@ def monitor(target_process, interval, log_path,
                 emailSent = True
         if quitEvent != None and quitEvent.isSet():
             continueFlag = False  # <==> break
+            f.close()
         if need_to_switch(t1, t2, log_interval):
             f.close()
-            logFileName = time.strftime("%Y-%m-%d.txt", time.localtime())
-            f = open(log_path + logFileName, 'w')
+            logFileName = log_file_name.log_file_name(opt=log_opt)
+            f = open(log_path + logFileName, 'w+')
     return 0
-
-
-def process_start(path):
-    p = psutil.Popen([path, ], stdout=PIPE)
-    return p
 
 
 def wrapped_email_sender(keywordDict=dict()):
