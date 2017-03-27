@@ -28,6 +28,14 @@ process = notepad.exe
 '''
 
 
+def sendIntervalToSeconds(string):
+    string = list(map(int, string.strip().split(":")))
+    if len(string) != 3:
+        raise Exception("Error: Email Sending Interval")
+    else:
+        return 3600 * string[0] + 60 * string[1] + string[2]
+
+
 def read_config(filename):
     cf = configparser.ConfigParser()
     cf.read(filename)
@@ -38,6 +46,7 @@ def read_config(filename):
     d["to_addr"] = cf.get("email", "to_addr").split(",")
     d["to_addr"] = list(map(lambda x: x.strip(), d["to_addr"]))
     d["smtp_server"] = cf.get("email", "smtp")
+    d["send_interval"] = sendIntervalToSeconds(cf.get("email", "send_interval"))
 
     d["target_process"] = cf.get("moniter", "target")
     d["memory_limit"] = float(cf.get("moniter", "memory_limit"))
@@ -52,7 +61,6 @@ def read_config(filename):
     d["white_list"] = list(map(lambda x: x.strip(), d["white_list"]))
     d["black_list"] = cf.get("black_list", "process").split(",")
     d["black_list"] = list(map(lambda x: x.strip(), d["black_list"]))
-
     return d
 
 
