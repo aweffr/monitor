@@ -1,3 +1,4 @@
+from PyQt5.QtWidgets import QMessageBox
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -10,7 +11,8 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsView, QGraphicsScene, QGraph
 
 # FigureCanvas inherits QWidget
 class PlotFrame(FigureCanvas):
-    def __init__(self, parent=None, width=4, height=3, dpi=100, processMemoryLimit=100, shareQueue=None):
+    def __init__(self, parent=None, width=4, height=3, dpi=100,
+                 processMemoryLimit=100, shareQueue=None, shareEvent=None):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes1 = fig.add_subplot(311)  # CPU
         self.axes2 = fig.add_subplot(312)  # GLOBAL MEMORY
@@ -18,6 +20,7 @@ class PlotFrame(FigureCanvas):
         self.axes1.hold(False)
         self.axes3.hold(False)
         self.axes2.hold(False)
+        self.closeSignal = shareEvent
         self.shareQueue = shareQueue
         self.processMemoryLimit = processMemoryLimit
 
@@ -70,13 +73,22 @@ class PlotFrame(FigureCanvas):
 
     def center(self):
         qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().bottomRight()
+        cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
         # TODO: 当退出窗口时，询问是否后台停止监控。
         # TODO: 当超限时，弹出警告对话框。
         # TODO: 实现Reset功能
+
+    def closeEvent(self, event):
+        # 这重写了右上角的关闭按钮的方法
+        reply = QMessageBox.question(self, 'Message',
+                                     "GUI quitting. Do you want to the background monitor?", QMessageBox.Yes |
+                                     QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.closeSignal.set()
+        event.accept()
 
 
 if __name__ == '__main__':
