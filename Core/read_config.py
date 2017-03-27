@@ -38,7 +38,7 @@ def sendIntervalToSeconds(string):
 
 def read_config(filename):
     cf = configparser.ConfigParser()
-    cf.read(filename)
+    cf.read(filename, encoding='utf-8')
 
     d = dict()
     d["from_addr"] = cf.get("email", "from_addr")
