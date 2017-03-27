@@ -38,7 +38,7 @@ def sendIntervalToSeconds(string):
 
 def read_config(filename):
     cf = configparser.ConfigParser()
-    cf.read(filename)
+    cf.read(filename, encoding='utf-8')
 
     d = dict()
     d["from_addr"] = cf.get("email", "from_addr")
@@ -61,6 +61,10 @@ def read_config(filename):
     d["white_list"] = list(map(lambda x: x.strip(), d["white_list"]))
     d["black_list"] = cf.get("black_list", "process").split(",")
     d["black_list"] = list(map(lambda x: x.strip(), d["black_list"]))
+
+    if 'restart' in cf:
+        d["need_restart"] = cf.getboolean("restart", "need_restart")
+        d["restart_path"] = cf.get("restart", "restart_path")
     return d
 
 
