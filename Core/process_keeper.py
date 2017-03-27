@@ -1,5 +1,5 @@
 import psutil
-from process_watcher import getPidsByName
+from process_monitor import getPidsByName
 from subprocess import PIPE
 
 GLOBAL_DEBUG = 0

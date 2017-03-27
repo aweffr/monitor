@@ -241,15 +241,14 @@ if __name__ == "__main__":
         sys.exit(-1)
     print("Configuration Load Complete. Start Monitor.")
 
-    monitor(target_process=keywordDict["target_process"],
+    monitor(keywordDict=keywordDict,
+            target_process=keywordDict["target_process"],
             interval=keywordDict["interval"],
             log_path=keywordDict["log_path"],
             email_context=keywordDict["email_context"],
             email_length=keywordDict["email_length"],
             memory_limit=keywordDict["memory_limit"],
-            log_interval=keywordDict["log_interval"],
-            keywordDict=keywordDict
-            )
+            log_interval=keywordDict["log_interval"])
 
     # email_sender.send_email(from_addr=keywordDict["from_addr"],
     #                         password=keywordDict["password"],
