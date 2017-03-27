@@ -12,6 +12,7 @@ from subprocess import PIPE
 import psutil
 import time
 import email_sender
+import log_file_name
 import sys
 from read_config import read_config
 from collections import deque
@@ -20,9 +21,6 @@ from pprint import pprint
 GLOBAL_DEBUG = False
 
 MB_UNIT = 1024 * 1024
-
-
-# TODO 把日志分七天打印
 
 
 def getPidsByName(target_process_name):
@@ -46,12 +44,24 @@ def getCpuState(interval=1):
     """
     return psutil.cpu_percent(interval)
 
+
 def getMemoryState():
     """
     获得全局内存的占用状态。以字符串形式返回
     """
     memory = psutil.virtual_memory()
-    return memory.percent, memory.used // MB_UNIT, memory.total // MB_UNIT
+    globalMemoryState = memory.percent, memory.used // MB_UNIT, memory.total // MB_UNIT
+    return globalMemoryState
+
+
+def globalMemoryStateToString(globalMemoryState):
+    currentMemoryPercent, currentMemoryUsed, currentMemoryTotal = globalMemoryState
+    memoryLogString = "Memory: %4s%% %6s/%s" % (
+        str(currentMemoryPercent),
+        str(currentMemoryUsed) + "Mb",
+        str(currentMemoryTotal) + "Mb"
+    )
+    return memoryLogString
 
 
 def getNetworkState():
@@ -93,6 +103,7 @@ def process_state(name, id_list, limit=50):
         memory_cnt += p.memory_percent()
         io_read_cnt += p.io_counters().read_count
         io_write_cnt += p.io_counters().write_count
+
     memory_exceed = (memory_cnt > limit)
     processStatusDict = {
         "process_name": name,
@@ -127,63 +138,77 @@ def print_recent_logs(out_file, queue):
         printLogFromDict(out_file, d)
 
 
-def monitor(target_process, interval, log_file,
+def need_to_switch(t1, t2, log_interval):
+    if t1.tm_yday > t2.tm_yday:
+        t2.tm_yday += 365
+    return (t2.tm_yday - t1.tm_yday) > log_interval
+
+
+def monitor(target_process, interval, log_path,
             email_context, email_length=25,
             memory_limit=50, shareQueue=None,
-            keywordDict=dict()):
+            quitEvent=None,
+            keywordDict=dict(),
+            log_interval=7):
     target_process_name = target_process
-    q = deque(maxlen=email_length)
+    emailMessageQueue = deque(maxlen=email_length)
     line_number = 0
     emailSent = False
-    t1 = time.clock()
-
-    with open(log_file, "w") as f:
+    continueFlag = True
+    monitorStartTime = time.clock()
+    t1 = time.localtime()
+    logFileName = time.strftime("%Y-%m-%d.txt", time.localtime())
+    f = open(log_path + logFileName, 'w')
+    while continueFlag is True:
         f.writelines("Logical CPU(s) number: %d\n" % psutil.cpu_count())
-        while True:
-            # log_temp为单次记录信息的项
-            logTempDict = dict()
-            line_number += 1
-            logTempDict['LineNumber'] = str(line_number)
-            # 时间
-            logTempDict['Time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            # 全局CPU和内存状态
-            currentCpuState = getCpuState(interval=interval)
-            currentMemoryPercent, currentMemoryUsed, currentMemoryTotal = getMemoryState()
-            memoryLogString = "Memory: %4s%% %6s/%s" % (
-                str(currentMemoryPercent),
-                str(currentMemoryUsed) + "Mb",
-                str(currentMemoryTotal) + "Mb"
+        # log_temp为单次记录信息的项
+        logTempDict = dict()
+        line_number += 1
+        logTempDict['LineNumber'] = str(line_number)
+        # 时间
+        logTempDict['Time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        # 全局CPU和内存状态
+        currentCpuState = getCpuState(interval=interval)
+        globalMemoryState = getMemoryState()
+        logTempDict['Global Status'] = "CPU:%s%%    %s" % (
+            str(currentCpuState), globalMemoryStateToString(globalMemoryState)
+        )
+        # 获取网络IO状态
+        network_status = getNetworkState()
+        logTempDict['NetworkStatus'] = netWorkStateToString(network_status)
+        # 目标进程状态
+        processIdList = getPidsByName(target_process_name)
+        processStatusDict, isExceed = process_state(target_process_name, processIdList, memory_limit)
+        logTempDict['Target Process'] = processStatusToString(processStatusDict)
+        if shareQueue is not None:
+            shareQueue.append(
+                (line_number, currentCpuState, globalMemoryState[0], processStatusDict["memory_occupied"]),
             )
-            logTempDict['Global Status'] = "CPU:%s%%    %s" % (str(currentCpuState), memoryLogString)
-            # 获取网络IO状态
-            network_status = getNetworkState()
-            logTempDict['NetworkStatus'] = netWorkStateToString(network_status)
-            # 目标进程状态
-            processIdList = getPidsByName(target_process_name)
-            processStatusDict, isExceed = process_state(target_process_name, processIdList, memory_limit)
-            logTempDict['Target Process'] = processStatusToString(processStatusDict)
-            if shareQueue is not None:
-                shareQueue.append(
-                    (line_number, currentCpuState, currentMemoryPercent, processStatusDict["memory_occupied"]),
-                )
-                if GLOBAL_DEBUG:
-                    print("DEBUG:", shareQueue[-1])
-            # 将本次记录项放入限长队列
-            q.append(logTempDict)
-            if not isExceed:
-                printLogFromDict(f, logTempDict)
-                # 不主动flush日志，减轻磁盘负担
-                if GLOBAL_DEBUG:
-                    f.flush()
-            else:  # if isExceed
-                t2 = time.clock()
-                f.writelines("Total Running time: %.3f\n" % (t2 - t1))
-                with open(email_context, "w") as send_file:
-                    print_recent_logs(send_file, q)
-                if not emailSent:
-                    wrapped_email_sender(keywordDict=keywordDict)
-                    print("Waring Email Sent!")
-                    emailSent = True
+            if GLOBAL_DEBUG:
+                print("DEBUG:", shareQueue[-1])
+        # 将本次记录项放入限长队列
+        emailMessageQueue.append(logTempDict)
+        monitorEndTime = time.clock()
+        t2 = time.localtime()
+        if not isExceed:
+            printLogFromDict(f, logTempDict)
+            # 不主动flush日志，减轻磁盘负担
+            if GLOBAL_DEBUG or (line_number % 60 == 0):
+                f.flush()
+        else:  # if isExceed
+            f.writelines("Total Running time: %.3f\n" % (monitorEndTime - monitorStartTime))
+            with open(email_context, "w") as send_file:
+                print_recent_logs(send_file, emailMessageQueue)
+            if not emailSent:
+                wrapped_email_sender(keywordDict=keywordDict)
+                print("Waring Email Sent!")
+                emailSent = True
+        if quitEvent != None and quitEvent.isSet():
+            continueFlag = False  # <==> break
+        if need_to_switch(t1, t2, log_interval):
+            f.close()
+            logFileName = time.strftime("%Y-%m-%d.txt", time.localtime())
+            f = open(log_path + logFileName, 'w')
     return 0
 
 
@@ -198,8 +223,7 @@ def wrapped_email_sender(keywordDict=dict()):
                                 password=keywordDict["password"],
                                 smtp_server=keywordDict["smtp_server"],
                                 to_addr=keywordDict["to_addr"],
-                                email_context=keywordDict["email_context"]
-                                )
+                                email_context=keywordDict["email_context"], )
     except Exception as e:
         print(e)
         return
@@ -208,8 +232,9 @@ def wrapped_email_sender(keywordDict=dict()):
 if __name__ == "__main__":
     # 找到QQ游览器的id process_id = "qqbrowser.exe"
     # time_interval = int(raw_input("输出间隔(s):"))
+    configFile = r"C:\Users\aweff\Documents\01.Intern\Moniter\config.conf"
     try:
-        keywordDict = read_config("config.conf")
+        keywordDict = read_config(configFile)
     except Exception as e:
         print("Configuration File Wrong!")
         sys.exit(-1)
@@ -217,10 +242,11 @@ if __name__ == "__main__":
 
     monitor(target_process=keywordDict["target_process"],
             interval=keywordDict["interval"],
-            log_file=keywordDict["log_file"],
+            log_path=keywordDict["log_path"],
             email_context=keywordDict["email_context"],
             email_length=keywordDict["email_length"],
             memory_limit=keywordDict["memory_limit"],
+            log_interval=keywordDict["log_interval"],
             keywordDict=keywordDict
             )
 
