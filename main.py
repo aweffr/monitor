@@ -39,7 +39,10 @@ def GUI(configDict, shareQueue=None, quitEvent=None):
     app.exec_()
 
 
-def processKeeper(configDict, scanTimeCycle=5, quitEvent=None):
+def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
+    if 'black_list' not in configDict and 'white_list' not in configDict:
+        return
+    # 有白名单和黑名单，进入名单监控循环。
     while True:
         blackList, whiteList = [], []
         time.sleep(scanTimeCycle)
@@ -73,7 +76,7 @@ if __name__ == "__main__":
                           kwargs={"configDict": configDict, "shareQueue": shareQueue,
                                   "quitEvent": quitEvent})
     t3 = threading.Thread(target=processKeeper, kwargs={"configDict": configDict,
-                                                        "scanTimeCycle": 5,
+                                                        "scanTimeCycle": 10,
                                                         "quitEvent": quitEvent})
     t1.start()
     t2.start()
@@ -87,4 +90,5 @@ if __name__ == "__main__":
     t1.join()
     t2.join()
     t3.join()
+    print("Exit!")
     # input("Press any key to exit!")
