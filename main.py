@@ -38,9 +38,13 @@ def GUI(configDict, shareQueue=None, quitEvent=None):
 
 
 def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
-    if 'black_list' not in configDict and 'white_list' not in configDict:
+    if 'black_list' not in configDict and 'white_list' not in configDict \
+            and 'need_restart' not in configDict:
         return
     # 有白名单和黑名单，进入名单监控循环。
+    need_restart = configDict['need_restart']
+    if need_restart:
+        process_name = configDict['process_name']
     while quitEvent is not None and (not quitEvent.isSet()):
         blackList, whiteList = [], []
         time.sleep(scanTimeCycle)
@@ -52,6 +56,9 @@ def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
             process_keeper.process_killer(pName)
         for pName in whiteList:
             pass
+        if need_restart and len(process_monitor.getPidsByName(process_name)) == 0:
+            process_keeper.process_starter(configDict['restart_path'])
+
 
 
 def emailSenderReset(configDict, emailEvent, quitEvent=None):
@@ -67,6 +74,7 @@ def emailSenderReset(configDict, emailEvent, quitEvent=None):
 
 if __name__ == "__main__":
     shareQueue = deque(maxlen=25)
+    shareProcessList = list()
     try:
         configDict = read_config.read_config("./config.conf")
     except Exception as quitEvent:
@@ -88,10 +96,18 @@ if __name__ == "__main__":
     t4 = threading.Thread(target=emailSenderReset, kwargs={"configDict": configDict,
                                                            "emailEvent": emailEvent,
                                                            "quitEvent": quitEvent})
-    t1.start()
-    t2.start()
-    t3.start()
-    t4.start()
+    thread_lst = [t1, t2, t3, t4]
+    for t in thread_lst:
+        t.start()
+    # -------------------DEBUG----------------------
+    while not quitEvent.isSet():
+        for t in thread_lst:
+            print(t.getName(), "is_alive:", t.is_alive())
+        time.sleep(5)
+    if quitEvent.isSet():
+        for t in thread_lst:
+            print(t.getName(), "is_alive:", t.is_alive())
+    # -----------------DEBUG END--------------------
     t1.join()
     t2.join()
     t3.join()

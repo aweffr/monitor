@@ -65,6 +65,7 @@ def read_config(filename):
     if 'restart' in cf:
         d["need_restart"] = cf.getboolean("restart", "need_restart")
         d["restart_path"] = cf.get("restart", "restart_path")
+        d["process_name"] = cf.get("restart", "process_name")
     return d
 
 

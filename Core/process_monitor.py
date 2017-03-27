@@ -181,8 +181,8 @@ def monitor(target_process, interval, log_path,
         network_status = getNetworkState()
         logTempDict['NetworkStatus'] = netWorkStateToString(network_status)
         # 目标进程状态
-        processIdList = getPidsByName(target_process_name)
-        processStatusDict, isExceed = process_state(target_process_name, processIdList, memory_limit)
+        shareProcessList = getPidsByName(target_process_name)
+        processStatusDict, isExceed = process_state(target_process_name, shareProcessList, memory_limit)
         logTempDict['Target Process'] = processStatusToString(processStatusDict)
         if shareQueue is not None:
             shareQueue.append(
