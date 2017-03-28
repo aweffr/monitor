@@ -3,6 +3,7 @@ import sys
 
 sys.path.extend(["./Core", "./GUI"])
 import process_monitor
+import email_sender
 import process_keeper
 import threading
 import read_config
@@ -57,8 +58,24 @@ def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
         for pName in whiteList:
             pass
         if need_restart and len(process_monitor.getPidsByName(process_name)) == 0:
-            process_keeper.process_starter(configDict['restart_path'])
+            restart_procedure(configDict)
 
+
+def restart_procedure(configDict):
+    f = open(configDict["log_path"] + "restart_email_context.txt", "w")
+    f.writelines(
+        "Process has been shutdown: {process_name}, now restart at {time}. \n\
+        target process path: {restart_path}".format({
+            "process_name": configDict['process_name'],
+            "time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+            "restart_path": configDict['restart_path']}))
+    f.close()
+    email_sender.send_email(from_addr=configDict["from_addr"],
+                            password=configDict["password"],
+                            smtp_server=configDict["smtp_server"],
+                            to_addr=configDict["to_addr"],
+                            email_context=f)
+    process_keeper.process_starter(configDict['restart_path'])
 
 
 def emailSenderReset(configDict, emailEvent, quitEvent=None):
@@ -71,6 +88,7 @@ def emailSenderReset(configDict, emailEvent, quitEvent=None):
                 break
         else:
             time.sleep(30)
+
 
 if __name__ == "__main__":
     shareQueue = deque(maxlen=25)

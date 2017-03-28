@@ -11,12 +11,12 @@ def _format_addr(s):
     return formataddr((Header(name, 'utf-8').encode(), addr))
 
 
-def msg_generator(from_addr, to_addr, email_context):
+def msg_generator(from_addr, to_addr, email_context, header=u'服务器目前状况'):
     with open(email_context, 'r') as log_file:
         msg = MIMEText('\n'.join(log_file), 'plain', 'utf-8')
     msg['From'] = _format_addr(u'进程监控 <%s>' % from_addr)
     msg['To'] = _format_addr(u'管理员 <%s>' % to_addr)
-    msg['Subject'] = Header(u'服务器目前状况', 'utf-8').encode()
+    msg['Subject'] = Header(header, 'utf-8').encode()
     return msg
 
 
