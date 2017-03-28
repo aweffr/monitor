@@ -62,10 +62,11 @@ def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
 
 
 def restart_procedure(configDict):
-    f = open(configDict["log_path"] + "restart_email_context.txt", "w")
+    emailFilePath = configDict["log_path"] + "restart_email_context.txt"
+    f = open(emailFilePath, "w")
     f.writelines(
         "Process has been shutdown: {process_name}, now restart at {time}. \n\
-        target process path: {restart_path}".format({
+        target process path: {restart_path}".format(**{
             "process_name": configDict['process_name'],
             "time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
             "restart_path": configDict['restart_path']}))
@@ -74,8 +75,11 @@ def restart_procedure(configDict):
                             password=configDict["password"],
                             smtp_server=configDict["smtp_server"],
                             to_addr=configDict["to_addr"],
-                            email_context=f)
-    process_keeper.process_starter(configDict['restart_path'])
+                            email_context=emailFilePath)
+    try:
+        process_keeper.process_starter(configDict['restart_path'])
+    except Exception as e:
+        print(e)
 
 
 def emailSenderReset(configDict, emailEvent, quitEvent=None):

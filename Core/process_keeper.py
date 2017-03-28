@@ -19,7 +19,7 @@ def process_killer(targetProcessName):
 
 
 def process_starter(path):
-    p = psutil.Popen([path, ], stdout=PIPE)
+    p = psutil.Popen([path, ])
     return p
 
 
