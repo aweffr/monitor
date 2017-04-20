@@ -38,7 +38,11 @@
     }
 
     function debug(jsonData) {
-        $('#tt').text("" + jsonData['cpu_percent'] + " " + jsonData['mem_percent'] + " " + jsonData['process']);
+        $('#tt').text(
+            "cpu : " + jsonData['cpu_percent'] + "\n" +
+            "global_memory : " + jsonData['mem_percent'] + "\n" +
+            "process_memory : " + jsonData['process']
+        );
     }
 
     initJson = {
