@@ -36,6 +36,14 @@ def time_to_seconds(string):
     else:
         return 3600 * string[0] + 60 * string[1] + string[2]
 
+def parse_process_path(s):
+    s = s.strip()
+    if s.startswith("["):
+        s = s.replace("[", "").replace("]", "").split()
+    else:
+        s = [s, ]
+    return s
+
 
 def read_config(filename):
     cf = configparser.ConfigParser()

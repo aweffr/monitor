@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from collections import deque
 import sys
 
@@ -69,10 +71,11 @@ def restart_procedure(configDict):
                             smtp_server=configDict["smtp_server"],
                             to_addr=configDict["to_addr"],
                             email_context=emailFilePath)
-    try:
-        process_keeper.process_starter(configDict['restart_path'])
-    except Exception as e:
-        print(e)
+    for path in configDict['restart_path']:
+        try:
+            process_keeper.process_starter(path)
+        except Exception as e:
+            print(e)
     if "restart_interval" in configDict:
         time.sleep(configDict["restart_interval"])
 
