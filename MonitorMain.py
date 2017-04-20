@@ -14,6 +14,7 @@ quitEvent = threading.Event()
 emailEvent = threading.Event()
 shareProcessList = list()
 configDict = dict()
+configLoadComplete = False
 
 
 def watcher():
@@ -89,11 +90,12 @@ def emailSenderReset(configDict, emailEvent, quitEvent=None):
 
 
 def run():
-    global quitEvent, emailEvent, shareQueue, configDict
+    global quitEvent, emailEvent, shareQueue, configDict, configLoadComplete
     try:
         configDict = read_config.read_config("./config.conf")
-    except Exception as quitEvent:
-        print("Configuration File Wrong!", quitEvent)
+        configLoadComplete = True
+    except Exception as e:
+        print("Configuration File Wrong!", e)
         sys.exit(-1)
     print("Configuration Load Complete.")
 

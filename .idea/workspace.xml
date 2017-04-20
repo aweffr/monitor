@@ -2,13 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8a08e1eb-3501-43c3-9e4f-7dbacfdf0369" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/install_dependency.sh" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/run.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Core/email_sender.py" afterPath="$PROJECT_DIR$/Core/email_sender.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Core/process_monitor.py" afterPath="$PROJECT_DIR$/Core/process_monitor.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Core/read_config.py" afterPath="$PROJECT_DIR$/Core/read_config.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MonitorMain.py" afterPath="$PROJECT_DIR$/MonitorMain.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.py" afterPath="$PROJECT_DIR$/app.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config.conf" afterPath="$PROJECT_DIR$/config.conf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/monitor.html" afterPath="$PROJECT_DIR$/templates/monitor.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/install_dependency.sh" afterPath="$PROJECT_DIR$/install_dependency.sh" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -23,8 +23,8 @@
     <SUITE FILE_PATH="coverage/WebMonitor$__init__.coverage" NAME="__init__ Coverage Results" MODIFIED="1492482871752" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Core/memcahed" />
     <SUITE FILE_PATH="coverage/WebMonitor$main.coverage" NAME="main Coverage Results" MODIFIED="1492671413864" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WebMonitor$csv_writer.coverage" NAME="csv_writer Coverage Results" MODIFIED="1492487421255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Core" />
-    <SUITE FILE_PATH="coverage/WebMonitor$app.coverage" NAME="app Coverage Results" MODIFIED="1492676902193" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/WebMonitor$MonitorMain.coverage" NAME="MonitorMain Coverage Results" MODIFIED="1492676149479" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WebMonitor$app.coverage" NAME="app Coverage Results" MODIFIED="1492678682367" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WebMonitor$MonitorMain.coverage" NAME="MonitorMain Coverage Results" MODIFIED="1492678583869" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WebMonitor$dict_to_xlsx.coverage" NAME="dict_to_xlsx Coverage Results" MODIFIED="1492484789265" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Core" />
     <SUITE FILE_PATH="coverage/WebMonitor$email_sender.coverage" NAME="email_sender Coverage Results" MODIFIED="1492676735198" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Core" />
     <SUITE FILE_PATH="coverage/WebMonitor$myCache.coverage" NAME="myCache Coverage Results" MODIFIED="1492656508783" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Core/memcahed" />
@@ -32,34 +32,34 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="600">
-      <file leaf-file-name="process_monitor.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Core/process_monitor.py">
+      <file leaf-file-name="read_config.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Core/read_config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="431">
-              <caret line="259" column="18" lean-forward="true" selection-start-line="259" selection-start-column="18" selection-end-line="259" selection-end-column="18" />
+            <state relative-caret-position="770">
+              <caret line="71" column="41" lean-forward="false" selection-start-line="71" selection-start-column="41" selection-end-line="71" selection-end-column="41" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MonitorMain.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MonitorMain.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="388">
+              <caret line="93" column="8" lean-forward="true" selection-start-line="93" selection-start-column="8" selection-end-line="93" selection-end-column="8" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="595">
+              <caret line="50" column="21" lean-forward="true" selection-start-line="50" selection-start-column="21" selection-end-line="50" selection-end-column="21" />
               <folding>
-                <element signature="e#145#158#0" expanded="true" />
+                <element signature="e#16#56#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.conf" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config.conf">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="724">
-              <caret line="41" column="16" lean-forward="true" selection-start-line="41" selection-start-column="16" selection-end-line="41" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="install_dependency.sh" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/install_dependency.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="70">
-              <caret line="2" column="31" lean-forward="true" selection-start-line="2" selection-start-column="31" selection-end-line="2" selection-end-column="31" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -91,7 +91,6 @@
         <option value="$PROJECT_DIR$/Core/memcahed/__init__.py" />
         <option value="$PROJECT_DIR$/Core/memcahed/MyMemcached.py" />
         <option value="$PROJECT_DIR$/Core/configparser.py" />
-        <option value="$PROJECT_DIR$/Core/read_config.py" />
         <option value="$PROJECT_DIR$/Core/dict_to_xlsx.py" />
         <option value="$PROJECT_DIR$/Core/csv_writer.py" />
         <option value="$PROJECT_DIR$/Core/monitor.py" />
@@ -102,13 +101,15 @@
         <option value="$PROJECT_DIR$/templates/mychart.html" />
         <option value="$PROJECT_DIR$/templates/ajaxtest.html" />
         <option value="$PROJECT_DIR$/main.py" />
-        <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/templates/monitor.html" />
-        <option value="$PROJECT_DIR$/config.conf" />
-        <option value="$PROJECT_DIR$/MonitorMain.py" />
         <option value="$PROJECT_DIR$/Core/email_sender.py" />
         <option value="$PROJECT_DIR$/Core/process_monitor.py" />
+        <option value="$PROJECT_DIR$/run.sh" />
+        <option value="$PROJECT_DIR$/MonitorMain.py" />
+        <option value="$PROJECT_DIR$/Core/read_config.py" />
+        <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/install_dependency.sh" />
+        <option value="$PROJECT_DIR$/config.conf" />
       </list>
     </option>
   </component>
@@ -204,20 +205,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WebMonitor" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WebMonitor" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="env" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -249,7 +236,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.process_monitor">
+  <component name="RunManager" selected="Python.app">
     <configuration default="false" name="monitor.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/WebMonitor/templates/monitor.html">
       <method />
     </configuration>
@@ -506,9 +493,9 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.process_monitor" />
-        <item index="1" class="java.lang.String" itemvalue="Python.email_sender" />
-        <item index="2" class="java.lang.String" itemvalue="Python.MonitorMain" />
+        <item index="0" class="java.lang.String" itemvalue="Python.MonitorMain" />
+        <item index="1" class="java.lang.String" itemvalue="Python.process_monitor" />
+        <item index="2" class="java.lang.String" itemvalue="Python.email_sender" />
         <item index="3" class="java.lang.String" itemvalue="JavaScript Debug.monitor.html" />
         <item index="4" class="java.lang.String" itemvalue="Python.main" />
       </list>
@@ -702,14 +689,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Core/read_config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="490">
-          <caret line="57" column="50" lean-forward="false" selection-start-line="57" selection-start-column="50" selection-end-line="57" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python27/Lib/zipfile.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="385">
@@ -851,16 +830,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1365">
-          <caret line="39" column="24" lean-forward="true" selection-start-line="39" selection-start-column="24" selection-end-line="39" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#40#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python27/Lib/threading.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="159">
@@ -877,37 +846,71 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MonitorMain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="8" column="18" lean-forward="false" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Core/process_monitor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="431">
-          <caret line="259" column="18" lean-forward="true" selection-start-line="259" selection-start-column="18" selection-end-line="259" selection-end-column="18" />
+        <state relative-caret-position="2251">
+          <caret line="257" column="13" lean-forward="true" selection-start-line="257" selection-start-column="13" selection-end-line="257" selection-end-column="13" />
           <folding>
             <element signature="e#145#158#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/env/Lib/site-packages/flask/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="509">
+          <caret line="786" column="25" lean-forward="false" selection-start-line="786" selection-start-column="25" selection-end-line="786" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Core/read_config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="770">
+          <caret line="71" column="41" lean-forward="false" selection-start-line="71" selection-start-column="41" selection-end-line="71" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MonitorMain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="388">
+          <caret line="93" column="8" lean-forward="true" selection-start-line="93" selection-start-column="8" selection-end-line="93" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/config.conf">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="724">
-          <caret line="41" column="16" lean-forward="true" selection-start-line="41" selection-start-column="16" selection-end-line="41" selection-end-column="16" />
+        <state relative-caret-position="479">
+          <caret line="43" column="6" lean-forward="true" selection-start-line="43" selection-start-column="6" selection-end-line="43" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="70">
+          <caret line="2" column="13" lean-forward="true" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/install_dependency.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="70">
-          <caret line="2" column="31" lean-forward="true" selection-start-line="2" selection-start-column="31" selection-end-line="2" selection-end-column="31" />
+        <state relative-caret-position="140">
+          <caret line="4" column="31" lean-forward="true" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="595">
+          <caret line="50" column="21" lean-forward="true" selection-start-line="50" selection-start-column="21" selection-end-line="50" selection-end-column="21" />
+          <folding>
+            <element signature="e#16#56#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

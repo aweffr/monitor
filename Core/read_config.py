@@ -68,6 +68,9 @@ def read_config(filename):
         d["restart_path"] = cf.get("restart", "restart_path")
         d["process_name"] = cf.get("restart", "process_name")
         d["restart_interval"] = time_to_seconds(cf.get("restart", "restart_interval", fallback="00:00:60"))
+
+    d['host'] = cf.get('web', 'ip', fallback='localhost')
+    d['port'] = int(cf.get('web', 'port', fallback='5000'))
     return d
 
 

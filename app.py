@@ -1,9 +1,10 @@
+# coding=utf-8
+
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
 from flask_script import Manager
 import json
 import time
-from random import randint
 import MonitorMain
 import threading
 
@@ -44,8 +45,14 @@ def getdata():
 
 if __name__ == "__main__":
     t1 = threading.Thread(target=MonitorMain.run)
-    t2 = threading.Thread(target=app.run)
     t1.run()
+    # 确保已经读取设置
+    while not MonitorMain.configLoadComplete:
+        time.sleep(1)
+    d = MonitorMain.configDict
+    t2 = threading.Thread(
+        target=app.run,
+        kwargs={'host': d['host'], 'port': d['port']})
     t2.run()
     t1.join()
     t2.join()
