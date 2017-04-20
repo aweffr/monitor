@@ -16,7 +16,12 @@ shareProcessList = list()
 configDict = dict()
 
 
-def watcher(configDict, shareQueue=None, quitEvent=None, emailEvent=None):
+def watcher():
+    global configDict, shareQueue, quitEvent, emailEvent
+    assert configDict is not None
+    assert shareQueue is not None
+    assert quitEvent is not None
+    assert emailEvent is not None
     process_monitor.monitor(
         share_queue=shareQueue,
         quit_event=quitEvent,
@@ -93,9 +98,7 @@ def run():
     print("Configuration Load Complete.")
 
     t1 = threading.Thread(
-        target=watcher,
-        kwargs={"configDict": configDict, "shareQueue": shareQueue,
-                "quitEvent": quitEvent, "emailEvent": emailEvent}
+        target=watcher
     )
     t2 = threading.Thread(
         target=processKeeper,

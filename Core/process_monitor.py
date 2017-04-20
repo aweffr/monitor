@@ -14,6 +14,7 @@ import zipfile
 import email_sender
 import log_file_name
 import sys
+import threading
 from read_config import read_config
 from csv_writer import CsvWriter
 from collections import deque
@@ -116,7 +117,7 @@ def need_to_switch(t1, t2, log_interval):
     return (t2.tm_yday - t1.tm_yday) > log_interval
 
 
-def monitor(share_queue=None, quit_event=None, email_event=None, config_dict=dict()):
+def monitor(share_queue, quit_event, email_event, config_dict=dict()):
     try:
         target_process_name = config_dict["target_process"]
         interval = config_dict["interval"]
@@ -198,8 +199,11 @@ def monitor(share_queue=None, quit_event=None, email_event=None, config_dict=dic
             except Exception as e:
                 print("Error at generate Email file!", e)
             if email_event is None or not email_event.isSet():
-                wrapped_email_sender(configDict=config_dict, xls_format=True)
-                print("Waring Email Sent!", "To addr: {addr}".format(**{'addr': config_dict["to_addr"]}))
+                # print("email_event is None:", email_event is None)
+                thd = threading.Thread(target=wrapped_email_sender,
+                                       kwargs={'config_dict': config_dict, 'xls_format': True})
+                # wrapped_email_sender(configDict=config_dict, xls_format=True)
+                thd.run()
                 if email_event is not None:
                     email_event.set()
         if quit_event is not None and quit_event.isSet():
@@ -228,32 +232,37 @@ def zipTheOldFile(zipFileName, logFileName, path):
         print("Wrong at remove zipped log file.!", e)
 
 
-def wrapped_email_sender(configDict=dict(), xls_format=False):
+def wrapped_email_sender(config_dict=dict(), xls_format=False):
     try:
+        if xls_format:
+            email_context = config_dict["email_context"].replace('txt', 'csv')
+        else:
+            email_context = config_dict["email_context"]
+
         email_sender.send_email(
-            from_addr=configDict["from_addr"],
-            password=configDict["password"],
-            smtp_server=configDict["smtp_server"],
-            to_addr=configDict["to_addr"],
-            email_context=configDict["email_context"],
+            from_addr=config_dict["from_addr"],
+            password=config_dict["password"],
+            smtp_server=config_dict["smtp_server"],
+            to_addr=config_dict["to_addr"],
+            email_context=email_context,
             xls_format=xls_format)
     except Exception as e:
         print(e)
-        return
+
+    print("Waring Email Sent!", "To addr: {addr}".format(**{'addr': config_dict["to_addr"]}))
 
 
 if __name__ == "__main__":
     # 找到QQ游览器的id process_id = "qqbrowser.exe"
     # time_interval = int(raw_input("输出间隔(s):"))
     import os
-
+    from MonitorMain import shareQueue, quitEvent, emailEvent
     os.chdir('..')
-    configFile = r"C:\Users\aweff\PycharmProjects\WebMonitor\config.conf"
     try:
-        keywordDict = read_config(configFile)
+        keywordDict = read_config('config.conf')
     except Exception as e:
         print("Configuration File Wrong!")
         sys.exit(-1)
     print("Configuration Load Complete. Start Monitor.")
 
-    monitor(config_dict=keywordDict)
+    monitor(shareQueue, quitEvent, emailEvent, config_dict=keywordDict)

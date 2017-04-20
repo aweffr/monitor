@@ -11,13 +11,31 @@
 <div class="page-header">
     <h1>Monitor</h1>
 </div>
+<!--<div class="container">-->
+<!--<div id="tt"></div>-->
+<!--<div id="cpu_chart" style="width: 600px;height:200px;"></div>-->
+<!--<div id="mem_chart" style="width: 600px;height:200px;"></div>-->
+<!--<div id="process_chart" style="width: 600px;height:200px;"></div>-->
+<!--</div>-->
+<div id="tt"></div>
 <div class="container">
-    <div id="tt"></div>
-    <div id="cpu_chart" style="width: 900px;height:200px;"></div>
-    <div id="mem_chart" style="width: 900px;height:200px;"></div>
-    <div id="process_chart" style="width: 900px;height:200px;"></div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div id="cpu_chart" style="width: 750px;height:250px;"></div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div id="mem_chart" style="width: 750px;height:250px;"></div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div id="process_chart" style="width: 750px;height:250px;"></div>
+        </div>
+    </div>
 </div>
-
+<!-- 生成图表，动态刷新 -->
 <script type="text/javascript">
     xx = [];
     yy_cpu = [];

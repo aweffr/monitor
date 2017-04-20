@@ -59,10 +59,14 @@ def send_email(from_addr, password, smtp_server, to_addr, email_context, xls_for
 
 
 if __name__ == "__main__":
-    from_addr = "aweffr@126.com"
-    password = "huami123"
-    # 输入SMTP服务器地址:
-    smtp_server = "smtp.126.com"
-    # 输入收件人地址:
-    to_addr = ["aweffr@foxmail.com", "aweffr@126.com"]
-    send_email(from_addr, password, smtp_server, to_addr, 'email_context.txt')
+    import read_config, os
+
+    os.chdir('..')
+    config_dict = read_config.read_config("./config.conf")
+    send_email(
+        from_addr=config_dict["from_addr"],
+        password=config_dict["password"],
+        smtp_server=config_dict["smtp_server"],
+        to_addr=config_dict["to_addr"],
+        email_context="./Log/email_context.csv",
+        xls_format=True)
