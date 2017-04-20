@@ -9,6 +9,12 @@ import threading
 import read_config
 import time
 
+shareQueue = deque(maxlen=100)
+quitEvent = threading.Event()
+emailEvent = threading.Event()
+shareProcessList = list()
+configDict = dict()
+
 
 def watcher(configDict, shareQueue=None, quitEvent=None, emailEvent=None):
     process_monitor.monitor(
@@ -77,18 +83,15 @@ def emailSenderReset(configDict, emailEvent, quitEvent=None):
             time.sleep(30)
 
 
-if __name__ == "__main__":
-    shareQueue = deque(maxlen=25)
-    shareProcessList = list()
+def run():
+    global quitEvent, emailEvent, shareQueue, configDict
     try:
         configDict = read_config.read_config("./config.conf")
     except Exception as quitEvent:
         print("Configuration File Wrong!", quitEvent)
         sys.exit(-1)
-    print("Configuration Load Complete. Start Monitor.")
+    print("Configuration Load Complete.")
 
-    quitEvent = threading.Event()
-    emailEvent = threading.Event()
     t1 = threading.Thread(
         target=watcher,
         kwargs={"configDict": configDict, "shareQueue": shareQueue,
@@ -109,19 +112,55 @@ if __name__ == "__main__":
     thread_lst = [t1, t2, t3]
     for t in thread_lst:
         t.start()
-    # -------------------DEBUG----------------------
-    if False:
-        while not quitEvent.isSet():
-            for t in thread_lst:
-                print(t.getName(), "is_alive:", t.is_alive())
-            time.sleep(5)
-        if quitEvent.isSet():
-            for t in thread_lst:
-                print(t.getName(), "is_alive:", t.is_alive())
-    # -----------------DEBUG END--------------------
-    t1.join()
-    t2.join()
-    t3.join()
-    print("Exit!")
-    sys.exit(0)
-    # input("Press any key to exit!")
+    print("Succeed: Start Monitor.")
+
+
+if __name__ == "__main__":
+    run()
+    # shareQueue = deque(maxlen=100)
+    # shareProcessList = list()
+    # try:
+    #     configDict = read_config.read_config("./config.conf")
+    # except Exception as quitEvent:
+    #     print("Configuration File Wrong!", quitEvent)
+    #     sys.exit(-1)
+    # print("Configuration Load Complete. Start Monitor.")
+    #
+    # quitEvent = threading.Event()
+    # emailEvent = threading.Event()
+    # t1 = threading.Thread(
+    #     target=watcher,
+    #     kwargs={"configDict": configDict, "shareQueue": shareQueue,
+    #             "quitEvent": quitEvent, "emailEvent": emailEvent}
+    # )
+    # t2 = threading.Thread(
+    #     target=processKeeper,
+    #     kwargs={"configDict": configDict,
+    #             "scanTimeCycle": 10,
+    #             "quitEvent": quitEvent}
+    # )
+    # t3 = threading.Thread(
+    #     target=emailSenderReset,
+    #     kwargs={"configDict": configDict,
+    #             "emailEvent": emailEvent,
+    #             "quitEvent": quitEvent}
+    # )
+    # thread_lst = [t1, t2, t3]
+    # for t in thread_lst:
+    #     t.start()
+    # # -------------------DEBUG----------------------
+    # if False:
+    #     while not quitEvent.isSet():
+    #         for t in thread_lst:
+    #             print(t.getName(), "is_alive:", t.is_alive())
+    #         time.sleep(5)
+    #     if quitEvent.isSet():
+    #         for t in thread_lst:
+    #             print(t.getName(), "is_alive:", t.is_alive())
+    # # -----------------DEBUG END--------------------
+    # t1.join()
+    # t2.join()
+    # t3.join()
+    # print("Exit!")
+    # sys.exit(0)
+    # # input("Press any key to exit!")

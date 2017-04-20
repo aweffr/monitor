@@ -196,7 +196,7 @@ def monitor(share_queue=None, quit_event=None, email_event=None, config_dict=dic
                 csv_email_f.queue_dict_to_csv(emailMessageQueue)
                 csv_email_f.close()
             except Exception as e:
-                print "Error at generate Email file!", e
+                print("Error at generate Email file!", e)
             if email_event is None or not email_event.isSet():
                 wrapped_email_sender(configDict=config_dict, xls_format=True)
                 print("Waring Email Sent!", "To addr: {addr}".format(**{'addr': config_dict["to_addr"]}))
