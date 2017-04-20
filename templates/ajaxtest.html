@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="../static/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="../static/js/echarts.js"></script>
+    <script type="text/javascript">
+        function callBack(jsonData) {
+            $("#demo1").append("123" + jsonData['aweffr_id'])
+        }
+
+        $(document).ready(
+            setInterval(function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/getdata",
+                    dataType: "json",
+                    success: callBack
+                })
+            }), 1000
+        )
+    </script>
+</head>
+<body>
+<div id="demo1">lalala</div>
+</body>
+</html>

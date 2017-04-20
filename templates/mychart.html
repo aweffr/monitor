@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+<div id="container" style="height: 100%"></div>
+<script type="text/javascript" src="../static/js/bootstrap.js"></script>
+<script type="text/javascript" src="../static/js/jquery-3.2.1.js"></script>
+<script type="text/javascript" src="../static/js/echarts.js"></script>
+<script type="text/javascript">
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom);
+    var app = {};
+    option = null;
+    var oneSecond = 1000;
+    var date = [];
+
+    var data = [Math.random() * 150];
+    var xx = 1;
+
+    function addData(shift) {
+        xx += 1;
+        date.push(xx);
+        data.push((Math.random() - 0.4) * 10 + data[data.length - 1]);
+
+        if (shift) {
+            date.shift();
+            data.shift();
+        }
+    }
+
+    for (var i = 1; i < 100; i++) {
+        addData(false);
+    }
+
+    option = {
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: date
+        },
+        yAxis: {
+            boundaryGap: [0, '50%'],
+            type: 'value'
+        },
+        series: [
+            {
+                name: '哈哈哈哈',
+                type: 'line',
+                smooth: true,
+                symbol: 'none',
+                stack: 'a',
+                areaStyle: {
+                    normal: {}
+                },
+                data: data
+            }
+        ]
+    };
+
+    function updateData(josonFormatData) {
+
+    }
+
+    function getData() {
+        $.ajax({
+            type: "get",
+            url: "/new",
+            dataType: "json",
+            success: updateData
+        });
+    }
+
+
+    setInterval(function () {
+        addData(true);
+        myChart.setOption({
+            xAxis: {
+                data: date
+            },
+            series: [{
+                name: '哈哈哈哈',
+                data: data
+            }]
+        });
+    }, 750);
+    ;
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+</script>
+</body>
+</html>
