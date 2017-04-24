@@ -41,6 +41,7 @@ def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
     need_restart = configDict['need_restart']
     if need_restart:
         process_name = configDict['process_name']
+        path_list = configDict['restart_path']
     while quitEvent is not None and (not quitEvent.isSet()):
         blackList, whiteList = [], []
         time.sleep(scanTimeCycle)
@@ -52,11 +53,13 @@ def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
             process_keeper.process_killer(pName)
         for pName in whiteList:
             pass
-        if need_restart and len(process_monitor.getPidsByName(process_name)) == 0:
-            restart_procedure(configDict)
+        if need_restart:
+            need_restart_list = process_monitor.check_process_by_path(path_list)
+            if len(need_restart_list) > 0:
+                restart_procedure(configDict, need_restart_list)
 
 
-def restart_procedure(configDict):
+def restart_procedure(configDict, need_restart_list):
     emailFilePath = configDict["log_path"] + "restart_email_context.txt"
     f = open(emailFilePath, "w")
     f.writelines(
@@ -64,14 +67,14 @@ def restart_procedure(configDict):
         target process path: {restart_path}".format(**{
             "process_name": configDict['process_name'],
             "time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-            "restart_path": configDict['restart_path']}))
+            "restart_path": str(need_restart_list)}))
     f.close()
     email_sender.send_email(from_addr=configDict["from_addr"],
                             password=configDict["password"],
                             smtp_server=configDict["smtp_server"],
                             to_addr=configDict["to_addr"],
                             email_context=emailFilePath)
-    for path in configDict['restart_path']:
+    for path in need_restart_list:
         try:
             process_keeper.process_starter(path)
         except Exception as e:

@@ -19,7 +19,11 @@ def process_killer(targetProcessName):
 
 
 def process_starter(path):
-    p = psutil.Popen([path, ])
+    try:
+        p = psutil.Popen([path, ])
+    except Exception as e:
+        print("Restart fail %s"%path, e)
+        p = None
     return p
 
 

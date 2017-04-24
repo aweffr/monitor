@@ -40,6 +40,18 @@ def get_pids_by_name(target_process_name):
             print("Pid: " + str(pid) + "not found.")
     return id_list
 
+def check_process_by_path(target_path_list):
+    pids = psutil.pids()
+    is_running = {p.lower().replace("\\", "/"): [p, False] for p in target_path_list}
+    for pid in pids:
+        try:
+            p_path = str(psutil.Process(pid).exe()).lower().replace("\\", "/")
+            if p_path in is_running:
+                is_running[p_path][1] = True
+        except Exception as e:
+            print("Pid: " + str(pid) + "not found.", e)
+    need_restart_list = [is_running[p][0] for p in is_running.keys() if not is_running[p][1]]
+    return need_restart_list
 
 def get_cpu_state(interval=1):
     """
@@ -76,23 +88,27 @@ def getNetworkState():
     return io_state
 
 
-def process_state(name, id_list, limit=50):
+def process_state(name, id_list, limit=50, process_path_list=None):
     """
     输入进程的名字，id列表。
     根据进程列表返回进程的状态（字符串）和是否超限的布尔值。
     """
     if len(id_list) == 0:
-        processStatusDict = {
+        process_status_dict = {
             "process_name": name,
             "process_total_numbers": 0,
             "memory_occupied": 0}
-        return processStatusDict, False
+        return process_status_dict, False
     memory_cnt = 0.0
     io_read_cnt = 0
     io_write_cnt = 0
+    if process_path_list is not None:
+        marked = {p: False for p in process_path_list}
     for pid in id_list:
         try:
             p = psutil.Process(pid)
+            if process_path_list is not None:
+                marked[p.exe()] = True
         except psutil.NoSuchProcess as e:
             print("Waring:", e)
             continue
@@ -101,14 +117,14 @@ def process_state(name, id_list, limit=50):
         io_write_cnt += p.io_counters().write_count
 
     memory_exceed = (memory_cnt > limit)
-    processStatusDict = {
+    process_status_dict = {
         "process_name": name,
         "memory_occupied": memory_cnt,
         "process_total_numbers": len(id_list),
         "p_read_cnt": io_read_cnt,
         "p_write_cnt": io_write_cnt
     }
-    return processStatusDict, memory_exceed
+    return process_status_dict, memory_exceed
 
 
 def need_to_switch(t1, t2, log_interval):

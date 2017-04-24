@@ -39,7 +39,7 @@ def time_to_seconds(string):
 def parse_process_path(s):
     s = s.strip()
     if s.startswith("["):
-        s = s.replace("[", "").replace("]", "").split()
+        s = s.replace("[", "").replace("]", "").split(",")
     else:
         s = [s, ]
     return s
@@ -73,7 +73,7 @@ def read_config(filename):
 
     if 'restart' in cf:
         d["need_restart"] = cf.getboolean("restart", "need_restart")
-        d["restart_path"] = cf.get("restart", "restart_path")
+        d["restart_path"] = parse_process_path(cf.get("restart", "restart_path"))
         d["process_name"] = cf.get("restart", "process_name")
         d["restart_interval"] = time_to_seconds(cf.get("restart", "restart_interval", fallback="00:00:60"))
 
@@ -89,5 +89,3 @@ if __name__ == "__main__":
     os.chdir("..")
     d = read_config("./config.conf")
     pprint(d)
-    #
-    # d2 =
