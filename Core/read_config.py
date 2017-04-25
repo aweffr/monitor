@@ -37,12 +37,17 @@ def time_to_seconds(string):
         return 3600 * string[0] + 60 * string[1] + string[2]
 
 def parse_process_path(s):
+    s = str(s)
     s = s.strip()
+    out = []
     if s.startswith("["):
         s = s.replace("[", "").replace("]", "").split(",")
+        for path in s:
+            if len(path.strip()) > 0:
+                out.append(path)
     else:
-        s = [s, ]
-    return s
+        out.append(s)
+    return out
 
 
 def read_config(filename):
