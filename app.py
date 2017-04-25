@@ -49,7 +49,7 @@ if __name__ == "__main__":
     t1 = threading.Thread(target=monitor_main.run)
     t1.run()
     # 确保已经读取设置
-    while not monitor_main.configLoadComplete:
+    while not monitor_main.configLoadComplete[0]:
         time.sleep(1)
     d = monitor_main.configDict
     if d['host'] == '127.0.0.1' or d['host'] == 'localhost':
