@@ -12,6 +12,7 @@ version 1.0:
 import psutil
 from psutil import STATUS_ZOMBIE, STATUS_DEAD, STATUS_STOPPED
 import time
+from copy import copy
 import zipfile
 import email_sender
 import log_file_name
@@ -27,7 +28,7 @@ from subprocess import PIPE
 GLOBAL_DEBUG = False
 
 target_init_process_dict = {}
-target_running_process_dict ={}
+target_running_process_dict = {}
 alive_dict = {}
 
 MB_UNIT = 1024 * 1024
@@ -49,7 +50,7 @@ def convert_to_abs_path(cwd, cmdline):
     idx = find_jarfile_index(cmdline)
     if cmdline[idx].startswith('.'):
         cmdline[idx] = cmdline[idx].replace(".", cwd, 1).replace("\\", "/")
-    else:
+    elif (cmdline[idx].count("/") + cmdline[idx].count("\\")) == 0:
         cmdline[idx] = cwd.replace("\\", "/") + "/" + cmdline[idx]
     return cmdline[idx]
 
@@ -219,7 +220,7 @@ def check_process_status_and_restart(config_dict):
     global alive_dict
     global target_running_process_dict, target_init_process_dict
     # Scan
-    for uid, proc in target_init_process_dict.iteritems():
+    for uid, proc in copy(target_init_process_dict).iteritems():
         if not proc.is_alive():
             proc.restart()
             email_sender.send_restart_email(config_dict, proc)
@@ -364,7 +365,8 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
 
         if share_queue is not None:
             share_queue.append(
-                (td['LineNumber'], td['CPU_percent'], td['memory_percent'], td['process_memory_occupied'])
+                (td['LineNumber'], td['CPU_percent'], td['memory_percent'],
+                 td['process_memory_occupied'], td['bytes_recv'] + td['bytes_sent'])
             )
 
         # 将本次记录项放入限长队列
