@@ -150,6 +150,9 @@ def monitor_init(config_dict):
     global alive_dict
     global target_init_process_dict
 
+    rlock = threading.RLock()
+    rlock.acquire()
+
     target_name_list = config_dict['process_name']
 
     customized_process_path_list = config_dict['restart_path']
@@ -179,6 +182,8 @@ def monitor_init(config_dict):
                 psutil.Popen([path, ], cwd=proc_id, stdout=PIPE)
             if typestr == "jar":
                 psutil.Popen(["java", "-jar", path], stdout=PIPE)
+
+    rlock.release()
 
 
 def refresh_target_processes(target_process_name_list):
