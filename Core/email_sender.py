@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from email import encoders
+import time
 from email.header import Header
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -56,6 +57,23 @@ def send_email(from_addr, password, smtp_server, to_addr, email_context, xls_for
         except Exception as e:
             print("Fail to send Email: %d (times)" % (i + 1), e)
     server.quit()
+
+
+def send_restart_email(configDict, proc):
+    emailFilePath = configDict["log_path"] + "restart_email_context.txt"
+    f = open(emailFilePath, "w")
+    f.writelines(
+        "Process has been shutdown: {process_name}, now restart at {time}. \n\
+        target process path: {cmdline}".format(**{
+            "process_name": proc.name,
+            "time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+            "cmdline": proc.cmdline}))
+    f.close()
+    send_email(from_addr=configDict["from_addr"],
+               password=configDict["password"],
+               smtp_server=configDict["smtp_server"],
+               to_addr=configDict["to_addr"],
+               email_context=emailFilePath)
 
 
 if __name__ == "__main__":
