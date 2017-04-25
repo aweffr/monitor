@@ -2,7 +2,6 @@
 
 from collections import deque
 import sys
-
 sys.path.extend(["./Core", ])
 import process_monitor
 import email_sender
@@ -16,7 +15,7 @@ quitEvent = threading.Event()
 emailEvent = threading.Event()
 shareProcessList = list()
 configDict = dict()
-configLoadComplete = False
+configLoadComplete = [False,]
 
 
 def watcher():
@@ -33,54 +32,28 @@ def watcher():
     )
 
 
-def processKeeper(configDict, scanTimeCycle=10, quitEvent=None):
-    if 'black_list' not in configDict and 'white_list' not in configDict \
-            and 'need_restart' not in configDict:
-        return
-
+def process_keeper_function(configDict, scanTimeCycle=5, quitEvent=None):
+    """
+    守护用线程，用于重启和终止进程。
+    :param configDict: 
+    :param scanTimeCycle: 
+    :param quitEvent: 
+    :return: 
+    """
     need_restart = configDict['need_restart']
-    if need_restart:
-        process_name = configDict['process_name']
-        path_list = configDict['restart_path']
     while quitEvent is not None and (not quitEvent.isSet()):
-        blackList, whiteList = [], []
+        black_list, white_list = [], []
         time.sleep(scanTimeCycle)
         if 'black_list' in configDict:
-            blackList = configDict['black_list']
+            black_list = configDict['black_list']
         if 'white_list' in configDict:
-            whiteList = configDict['white_list']
-        for pName in blackList:
-            process_keeper.process_killer(pName)
-        for pName in whiteList:
-            pass
+            white_list = configDict['white_list']
+        for pName in black_list:
+            process_keeper.process_killer_by_name(pName)
+        # for pName in white_list:
+        #     pass
         if need_restart:
-            need_restart_list = process_monitor.check_process_by_path(path_list)
-            if len(need_restart_list) > 0:
-                restart_procedure(configDict, need_restart_list)
-
-
-def restart_procedure(configDict, need_restart_list):
-    emailFilePath = configDict["log_path"] + "restart_email_context.txt"
-    f = open(emailFilePath, "w")
-    f.writelines(
-        "Process has been shutdown: {process_name}, now restart at {time}. \n\
-        target process path: {restart_path}".format(**{
-            "process_name": configDict['process_name'],
-            "time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-            "restart_path": str(need_restart_list)}))
-    f.close()
-    email_sender.send_email(from_addr=configDict["from_addr"],
-                            password=configDict["password"],
-                            smtp_server=configDict["smtp_server"],
-                            to_addr=configDict["to_addr"],
-                            email_context=emailFilePath)
-    for path in need_restart_list:
-        try:
-            process_keeper.process_starter(path)
-        except Exception as e:
-            print(e)
-    if "restart_interval" in configDict:
-        time.sleep(configDict["restart_interval"])
+            process_monitor.check_process_status_and_restart(configDict)
 
 
 def emailSenderReset(configDict, emailEvent, quitEvent=None):
@@ -99,17 +72,19 @@ def run():
     global quitEvent, emailEvent, shareQueue, configDict, configLoadComplete
     try:
         configDict = read_config.read_config("./config.conf")
-        configLoadComplete = True
+        configLoadComplete[0] = True
     except Exception as e:
         print("Configuration File Wrong!", e)
         sys.exit(-1)
     print("Configuration Load Complete.")
 
+    process_monitor.monitor_init(configDict)
+
     t1 = threading.Thread(
         target=watcher
     )
     t2 = threading.Thread(
-        target=processKeeper,
+        target=process_keeper_function,
         kwargs={"configDict": configDict,
                 "scanTimeCycle": 10,
                 "quitEvent": quitEvent}
