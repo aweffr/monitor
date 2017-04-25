@@ -2,6 +2,7 @@
 
 from collections import deque
 import sys
+
 sys.path.extend(["./Core", ])
 import process_monitor
 import email_sender
@@ -15,7 +16,7 @@ quitEvent = threading.Event()
 emailEvent = threading.Event()
 shareProcessList = list()
 configDict = dict()
-configLoadComplete = [False,]
+configLoadComplete = [False, ]
 
 
 def watcher():
@@ -32,18 +33,19 @@ def watcher():
     )
 
 
-def process_keeper_function(configDict, scanTimeCycle=5, quitEvent=None):
+def process_keeper_function(configDict, scan_time_cycle=60, quit_event=None):
     """
     守护用线程，用于重启和终止进程。
     :param configDict: 
-    :param scanTimeCycle: 
-    :param quitEvent: 
+    :param scan_time_cycle: 
+    :param quit_event: 
     :return: 
     """
     need_restart = configDict['need_restart']
-    while quitEvent is not None and (not quitEvent.isSet()):
+    while quit_event is not None \
+            and not quit_event.isSet():
         black_list, white_list = [], []
-        time.sleep(scanTimeCycle)
+        time.sleep(scan_time_cycle)
         # if 'black_list' in configDict:
         #     black_list = configDict['black_list']
         # if 'white_list' in configDict:
@@ -56,7 +58,7 @@ def process_keeper_function(configDict, scanTimeCycle=5, quitEvent=None):
             process_monitor.check_process_status_and_restart(configDict)
 
 
-def emailSenderReset(configDict, emailEvent, quitEvent=None):
+def email_sender_reset(configDict, emailEvent, quitEvent=None):
     while quitEvent is not None and (not quitEvent.isSet()):
         if emailEvent.isSet():
             t1 = time.time()
@@ -86,11 +88,11 @@ def run():
     t2 = threading.Thread(
         target=process_keeper_function,
         kwargs={"configDict": configDict,
-                "scanTimeCycle": 10,
-                "quitEvent": quitEvent}
+                # "scan_time_cycle": 60,
+                "quit_event": quitEvent}
     )
     t3 = threading.Thread(
-        target=emailSenderReset,
+        target=email_sender_reset,
         kwargs={"configDict": configDict,
                 "emailEvent": emailEvent,
                 "quitEvent": quitEvent}
