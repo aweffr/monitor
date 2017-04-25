@@ -44,12 +44,12 @@ def process_keeper_function(configDict, scanTimeCycle=5, quitEvent=None):
     while quitEvent is not None and (not quitEvent.isSet()):
         black_list, white_list = [], []
         time.sleep(scanTimeCycle)
-        if 'black_list' in configDict:
-            black_list = configDict['black_list']
-        if 'white_list' in configDict:
-            white_list = configDict['white_list']
-        for pName in black_list:
-            process_keeper.process_killer_by_name(pName)
+        # if 'black_list' in configDict:
+        #     black_list = configDict['black_list']
+        # if 'white_list' in configDict:
+        #     white_list = configDict['white_list']
+        # for pName in black_list:
+        #     process_keeper.process_killer_by_name(pName)
         # for pName in white_list:
         #     pass
         if need_restart:
