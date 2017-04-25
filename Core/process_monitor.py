@@ -65,9 +65,9 @@ def parse_proc_id_tomcat(cwd):
     assert isinstance(cwd, str)
     assert cwd.lower().find("tomcat") != -1
     if cwd.find("bin") != -1:
-        return cwd[:cwd.lower().find("bin")].strip("\\")
+        return cwd[:cwd.lower().find("bin")].strip("\\").strip("/")
     else:
-        return cwd.strip("\\")
+        return cwd.strip("\\").strip("/")
 
 
 class ProcDao(object):
@@ -156,7 +156,7 @@ def monitor_init(config_dict):
     for path in customized_process_path_list:
         if path.lower().find("tomcat") != -1:
             alive_dict[parse_proc_id_tomcat(path)] = [False, path, "tomcat"]
-        elif path.find("-jar") != -1:
+        elif path.find(".jar") != -1:
             alive_dict[path] = [False, path, "jar"]
 
     print("Before init scanning, status_dict is:", alive_dict, sep="\n")
@@ -166,7 +166,8 @@ def monitor_init(config_dict):
         if proc.name().lower() in target_name_list:
             tmp = ProcDao(proc)
             target_init_process_dict[tmp.proc_uid] = tmp
-            alive_dict[tmp.proc_uid][0] = True
+            if tmp.proc_uid in alive_dict:
+                alive_dict[tmp.proc_uid][0] = True
 
     print("After init scanning, status_dict is:", alive_dict, sep="\n")
 
