@@ -37,7 +37,7 @@ def time_to_seconds(string):
         return 3600 * string[0] + 60 * string[1] + string[2]
 
 def parse_process_path(s):
-    s = str(s)
+    s = str(s).replace("\\", "/")
     s = s.strip()
     out = []
     if s.startswith("["):
@@ -81,7 +81,7 @@ def read_config(filename):
     d["memory_limit"] = float(cf.get("moniter", "memory_limit"))
     d["interval"] = float(cf.get("moniter", "interval"))
 
-    d["log_path"] = cf.get("file", "log_path")
+    d["log_path"] = cf.get("file", "log_path").replace("\\", "/")
     d["log_interval"] = int(cf.get("file", "log_interval"))
     d["email_context"] = cf.get("file", "email_context")
     d["email_length"] = int(cf.get("file", "email_length"))
