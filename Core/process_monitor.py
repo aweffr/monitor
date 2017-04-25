@@ -1,57 +1,229 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 '''
 功能：
 从运行开始，每隔 X(s) 打印当前CPU的使用率，内存的使用率，当前目标进程线程数和使用率。
 若监控的进程内存占用超过一定限值，终止并重启该进程。
 
-version 0.1:
-基于python3.6实现基本功能。
+version 1.0:
+精细初始化
 '''
 import psutil
+from psutil import STATUS_ZOMBIE, STATUS_DEAD, STATUS_STOPPED
 import time
 import zipfile
 import email_sender
 import log_file_name
 import sys
 import threading
+import email_sender
 from read_config import read_config
 from csv_writer import CsvWriter
 from collections import deque
-from pprint import pprint
 from collections import OrderedDict
+from subprocess import PIPE
 
 GLOBAL_DEBUG = False
+
+target_init_process_dict = {}
+target_running_process_dict ={}
+alive_dict = {}
 
 MB_UNIT = 1024 * 1024
 
 
-def get_pids_by_name(target_process_name):
+def find_jarfile_index(cmdline):
+    for idx, param in enumerate(cmdline):
+        if param.find("-jar") != -1:
+            return idx + 1
+
+
+def convert_to_abs_path(cwd, cmdline):
+    """
+    将jar包名改为绝对目录，并以此作为proc的id。
+    :param cwd: 
+    :param cmdline: 
+    :return: cmdline[idx] 作为 proc_id
+    """
+    idx = find_jarfile_index(cmdline)
+    if cmdline[idx].startswith('.'):
+        cmdline[idx] = cmdline[idx].replace(".", cwd, 1).replace("\\", "/")
+    else:
+        cmdline[idx] = cwd.replace("\\", "/") + "/" + cmdline[idx]
+    return cmdline[idx]
+
+
+def parse_proc_id_tomcat(cwd):
+    """
+    cwd是tomcat的当前工作目录
+    :param cwd: 
+    :return: 
+    """
+    print("parse_proc_id_tomcat, cwd=", cwd)
+    assert isinstance(cwd, str)
+    assert cwd.lower().find("tomcat") != -1
+    if cwd.find("bin") != -1:
+        return cwd[:cwd.lower().find("bin")].strip("\\")
+    else:
+        return cwd.strip("\\")
+
+
+class ProcDao(object):
+    def __init__(self, proc):
+        self.is_jar = False
+        self.is_tomcat = False
+        self.proc_uid = None
+        self.pid = proc.pid
+        self.process_bind = proc
+        self.name = proc.name()
+        self.cmdline = proc.cmdline()
+        self.exe = proc.exe()
+        self.cwd = proc.cwd()
+        self.regularization()
+
+    def get_proc_uid(self):
+        return self.proc_uid
+
+    def __hash__(self):
+        return hash(self.pid) + hash(self.name)
+
+    def __eq__(self, other):
+        if type(self) == type(other):
+            return self.__hash__() == other.__hash__()
+
+    def __str__(self):
+        return "%s: %d, path=%s" % (self.name, self.pid, str(self.cmdline))
+
+    def regularization(self):
+        """
+        确定本进程跟踪的是直接启动的jar包还是tomcat。
+        如果是jar包，将jar包设置为绝对路径，并将jar包的绝对路径作为uid
+        如果是tomcat,解析tmocat的根目录，并将tomcat的根目录作为uid
+        :return: 
+        """
+        for params in self.cmdline:
+            if params.find('-jar') != -1:
+                self.is_jar = True
+                break
+            elif params.lower().find('tomcat') != -1:
+                self.is_tomcat = True
+                break
+        assert self.is_jar or self.is_tomcat
+
+        if self.is_jar:
+            # 修改jar包为绝对路径
+            self.proc_uid = convert_to_abs_path(self.cwd, self.cmdline)
+        elif self.is_tomcat:
+            self.proc_uid = parse_proc_id_tomcat(self.cwd)
+
+    def is_alive(self):
+        try:
+            status = self.process_bind.status()
+            if (status is STATUS_ZOMBIE) \
+                    or (status is STATUS_STOPPED) \
+                    or (status is STATUS_DEAD):
+                return False
+        except Exception as e:
+            print(e)
+            return False
+        return True
+
+    def restart(self):
+        try:
+            if self.is_jar:
+                self.process_bind = psutil.Popen(['java', '-jar', self.proc_uid], stdout=PIPE)
+                self.pid = self.process_bind.pid
+            elif self.is_tomcat:
+                self.process_bind = psutil.Popen(self.cmdline, stdout=PIPE, cwd=self.proc_uid)
+                self.pid = self.process_bind.pid
+        except Exception as e:
+            print("Error when ProcDao.restart()", e)
+
+
+def popen_in_thread(arg_list, **kwargs):
+    psutil.Popen(arg_list, stdout=PIPE, **kwargs)
+
+
+def monitor_init(config_dict):
+    global alive_dict
+    global target_init_process_dict
+
+    target_name_list = config_dict['process_name']
+
+    customized_process_path_list = config_dict['restart_path']
+    for path in customized_process_path_list:
+        if path.lower().find("tomcat") != -1:
+            alive_dict[parse_proc_id_tomcat(path)] = [False, path, "tomcat"]
+        elif path.find("-jar") != -1:
+            alive_dict[path] = [False, path, "jar"]
+
+    print("Before init scanning, status_dict is:", alive_dict, sep="\n")
+
+    # First Scan
+    for proc in psutil.process_iter():
+        if proc.name().lower() in target_name_list:
+            tmp = ProcDao(proc)
+            target_init_process_dict[tmp.proc_uid] = tmp
+            alive_dict[tmp.proc_uid][0] = True
+
+    print("After init scanning, status_dict is:", alive_dict, sep="\n")
+
+    for proc_id, val in alive_dict.iteritems():
+        running, path, typestr = val
+        print(proc_id, running, path)
+        if not running:
+            if typestr == "tomcat":
+                psutil.Popen([path, ], cwd=proc_id, stdout=PIPE)
+            if typestr == "jar":
+                psutil.Popen(["java", "-jar", path], stdout=PIPE)
+
+
+def refresh_target_processes(target_process_name_list):
     '''
     由目标进程的名字（字符串）获得进程id，以列表形式返回。
     '''
-    pids = psutil.pids()
-    id_list = []
-    for pid in pids:
-        try:
-            if str(psutil.Process(pid).name()).lower() == target_process_name:
-                id_list.append(pid)
-        except Exception as e:
-            print("Pid: " + str(pid) + "not found.")
-    return id_list
+    global target_running_process_dict, target_init_process_dict
+    target_running_process_dict.clear()
+    target_alive_process_list = []
+    for proc in psutil.process_iter():
+        if proc.name().lower() in target_process_name_list:
+            tmp = ProcDao(proc)
+            target_running_process_dict[tmp.proc_uid] = tmp
+            if tmp.proc_uid not in target_init_process_dict:
+                target_init_process_dict[tmp.proc_uid] = tmp
+    return target_alive_process_list
 
-def check_process_by_path(target_path_list):
-    pids = psutil.pids()
-    is_running = {p.lower().replace("\\", "/"): [p, False] for p in target_path_list}
-    for pid in pids:
-        try:
-            p_path = str(psutil.Process(pid).exe()).lower().replace("\\", "/")
-            if p_path in is_running:
-                is_running[p_path][1] = True
-        except Exception as e:
-            print("Pid: " + str(pid) + "not found.", e)
-    need_restart_list = [is_running[p][0] for p in is_running.keys() if not is_running[p][1]]
-    return need_restart_list
+
+# def check_process_status_and_restart(target_name_list):
+#     global alive_dict
+#     for key in alive_dict.iterkeys():
+#         alive_dict[key][0] = False
+#     # Scan
+#     for proc in psutil.process_iter():
+#         if proc.name().lower() in target_name_list:
+#             tmp = ProcDao(proc)
+#             target_init_process_dict[tmp.proc_uid] = tmp
+#             alive_dict[tmp.proc_uid][0] = True
+#
+#     for proc_id, val in alive_dict.iteritems():
+#         running, path, typestr = val
+#         print(proc_id, running, path)
+#         if not running:
+#             if typestr == "tomcat":
+#                 psutil.Popen([path, ], cwd=proc_id, stdout=PIPE)
+#             if typestr == "jar":
+#                 psutil.Popen(["java", "-jar", path], stdout=PIPE)
+
+def check_process_status_and_restart(config_dict):
+    global alive_dict
+    global target_running_process_dict, target_init_process_dict
+    # Scan
+    for uid, proc in target_init_process_dict.iteritems():
+        if not proc.is_alive():
+            proc.restart()
+            email_sender.send_restart_email(config_dict, proc)
+
 
 def get_cpu_state(interval=1):
     """
@@ -65,18 +237,19 @@ def get_memory_state():
     获得全局内存的占用状态。以字符串形式返回
     """
     memory = psutil.virtual_memory()
-    globalMemoryState = memory.percent, memory.used // MB_UNIT, memory.total // MB_UNIT
-    return globalMemoryState
+    global_memory_state = memory.percent, memory.used // MB_UNIT, memory.total // MB_UNIT
+    return global_memory_state
 
 
-def globalMemoryStateToString(globalMemoryState):
-    currentMemoryPercent, currentMemoryUsed, currentMemoryTotal = globalMemoryState
-    memoryLogString = "Memory: %4s%% %6s/%s" % (
-        str(currentMemoryPercent),
-        str(currentMemoryUsed) + "Mb",
-        str(currentMemoryTotal) + "Mb"
-    )
-    return memoryLogString
+#
+# def globalMemoryStateToString(globalMemoryState):
+#     currentMemoryPercent, currentMemoryUsed, currentMemoryTotal = globalMemoryState
+#     memoryLogString = "Memory: %4s%% %6s/%s" % (
+#         str(currentMemoryPercent),
+#         str(currentMemoryUsed) + "Mb",
+#         str(currentMemoryTotal) + "Mb"
+#     )
+#     return memoryLogString
 
 
 def getNetworkState():
@@ -88,12 +261,13 @@ def getNetworkState():
     return io_state
 
 
-def process_state(name, id_list, limit=50, process_path_list=None):
+def process_state(name, limit=50):
     """
     输入进程的名字，id列表。
     根据进程列表返回进程的状态（字符串）和是否超限的布尔值。
     """
-    if len(id_list) == 0:
+    global target_running_process_dict
+    if len(target_running_process_dict) == 0:
         process_status_dict = {
             "process_name": name,
             "process_total_numbers": 0,
@@ -102,25 +276,22 @@ def process_state(name, id_list, limit=50, process_path_list=None):
     memory_cnt = 0.0
     io_read_cnt = 0
     io_write_cnt = 0
-    if process_path_list is not None:
-        marked = {p: False for p in process_path_list}
-    for pid in id_list:
-        try:
-            p = psutil.Process(pid)
-            if process_path_list is not None:
-                marked[p.exe()] = True
-        except psutil.NoSuchProcess as e:
-            print("Waring:", e)
-            continue
-        memory_cnt += p.memory_percent()
-        io_read_cnt += p.io_counters().read_count
-        io_write_cnt += p.io_counters().write_count
+    try:
+        for key, proc_dao in target_running_process_dict.iteritems():
+            print(type(proc_dao))
+            proc = proc_dao.process_bind
+            with proc.oneshot():
+                memory_cnt += proc.memory_percent()
+                io_read_cnt += proc.io_counters().read_count
+                io_write_cnt += proc.io_counters().write_count
+    except Exception as e:
+        print("Warning at function process_state():", e)
 
     memory_exceed = (memory_cnt > limit)
     process_status_dict = {
         "process_name": name,
         "memory_occupied": memory_cnt,
-        "process_total_numbers": len(id_list),
+        "process_total_numbers": len(target_init_process_dict),
         "p_read_cnt": io_read_cnt,
         "p_write_cnt": io_write_cnt
     }
@@ -135,7 +306,7 @@ def need_to_switch(t1, t2, log_interval):
 
 def monitor(share_queue, quit_event, email_event, config_dict=dict()):
     try:
-        target_process_name = config_dict["target_process"]
+        target_process_name_list = config_dict["target_process"]
         interval = config_dict["interval"]
         log_path = config_dict["log_path"]
         email_context = config_dict["email_context"]
@@ -143,11 +314,11 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
         memory_limit = config_dict["memory_limit"]
         log_interval = config_dict["log_interval"]
     except Exception as e:
-        print "Error at configDict, monitor exit."
+        print("Error at configDict, monitor exit.", e)
         sys.exit(-1)
 
     line_number = 0
-    continueFlag = True
+    continue_flag = True
     emailMessageQueue = deque(maxlen=email_length)
     if log_interval == 7:
         log_opt = 'week'
@@ -159,7 +330,7 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
     logFileName = log_file_name.log_file_name(opt=log_opt)
     csv_f = CsvWriter(logFileName, path=log_path)
 
-    while continueFlag is True:
+    while continue_flag is True:
         # logTempDict 为单次记录信息的项
         td = OrderedDict()
         line_number += 1
@@ -169,8 +340,8 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
         # 全局CPU和内存状态
         currentCpuState = get_cpu_state(interval=interval)
         td['CPU_percent'] = currentCpuState
-        globalMemoryState = get_memory_state()
-        td['memory_percent'], td['memory_used'], td['memory_total'] = globalMemoryState
+        global_memory_state = get_memory_state()
+        td['memory_percent'], td['memory_used'], td['memory_total'] = global_memory_state
         # 获取网络IO状态
         network_status = getNetworkState()
         td['bytes_sent'] = network_status.bytes_sent
@@ -178,16 +349,16 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
         td['packets_sent'] = network_status.packets_sent
         td['packets_recv'] = network_status.packets_recv
         # 目标进程状态
-        shareProcessList = get_pids_by_name(target_process_name)
-        processStatusDict, isExceed = process_state(target_process_name, shareProcessList, memory_limit)
-        if processStatusDict['process_total_numbers'] > 0:
-            td['process_name'] = processStatusDict['process_name']
-            td['process_memory_occupied'] = processStatusDict['memory_occupied']
-            td['process_total_numbers'] = processStatusDict['process_total_numbers']
-            td['process_read_cnt'] = processStatusDict['p_read_cnt']
-            td['process_write_cnt'] = processStatusDict['p_write_cnt']
+        refresh_target_processes(target_process_name_list)
+        process_status_dict, is_exceed = process_state(target_process_name_list, memory_limit)
+        if process_status_dict['process_total_numbers'] > 0:
+            td['process_name'] = process_status_dict['process_name']
+            td['process_memory_occupied'] = process_status_dict['memory_occupied']
+            td['process_total_numbers'] = process_status_dict['process_total_numbers']
+            td['process_read_cnt'] = process_status_dict['p_read_cnt']
+            td['process_write_cnt'] = process_status_dict['p_write_cnt']
         else:
-            td['process_name'] = processStatusDict['process_name']
+            td['process_name'] = process_status_dict['process_name']
             td['process_memory_occupied'], td['process_total_numbers'], td['process_read_cnt'], td[
                 'process_write_cnt'] = 0, 0, 0, 0
 
@@ -207,7 +378,7 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
         if line_number % 120 == 0:
             csv_f.flush()
 
-        if isExceed:
+        if is_exceed:
             try:
                 csv_email_f = CsvWriter(email_context)
                 csv_email_f.queue_dict_to_csv(emailMessageQueue)
@@ -223,25 +394,24 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
                 if email_event is not None:
                     email_event.set()
         if quit_event is not None and quit_event.isSet():
-            continueFlag = False  # <==> break
+            continue_flag = False  # <==> break
             csv_f.close()
         if need_to_switch(t1, t2, log_interval):
-            fName = csv_f.filename
+            f_name = csv_f.filename
             csv_f.close()
-            zipTheOldFile(fName.replace("csv", "zip"), fName, log_path)
+            zip_the_old_file(f_name.replace("csv", "zip"), f_name, log_path)
             t1 = t2  # Update t1
             logFileName = log_file_name.log_file_name(opt=log_opt)
             csv_f = CsvWriter(logFileName, path=log_path)
     return 0
 
 
-def zipTheOldFile(zipFileName, logFileName, path):
+def zip_the_old_file(zipFileName, logFileName, path):
     try:
         with zipfile.ZipFile(path + zipFileName, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
             zf.write(path + logFileName)
     except Exception as e:
-        print "Error: cannot zip current log: %s" % logFileName
-        print e
+        print("Error: cannot zip current log file: %s" % logFileName, e)
     try:
         os.remove(path + logFileName)
     except Exception as e:
@@ -272,7 +442,8 @@ if __name__ == "__main__":
     # 找到QQ游览器的id process_id = "qqbrowser.exe"
     # time_interval = int(raw_input("输出间隔(s):"))
     import os
-    from MonitorMain import shareQueue, quitEvent, emailEvent
+    from monitor_main import shareQueue, quitEvent, emailEvent
+
     os.chdir('..')
     try:
         keywordDict = read_config('config.conf')
