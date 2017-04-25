@@ -49,6 +49,20 @@ def parse_process_path(s):
         out.append(s)
     return out
 
+def parse_process_name(s):
+    s = str(s)
+    s = s.strip()
+    out = []
+    if s.startswith("["):
+        s = s.replace("[", "").replace("]", "").split(",")
+        for name in s:
+            name = name.strip()
+            if len(name) > 0:
+                out.append(name)
+    else:
+        out.append(s)
+    return out
+
 
 def read_config(filename):
     cf = configparser.ConfigParser()
@@ -63,6 +77,7 @@ def read_config(filename):
     d["send_interval"] = time_to_seconds(cf.get("email", "send_interval"))
 
     d["target_process"] = cf.get("moniter", "target")
+    d["process_name"] = parse_process_name(cf.get("moniter", "target"))
     d["memory_limit"] = float(cf.get("moniter", "memory_limit"))
     d["interval"] = float(cf.get("moniter", "interval"))
 
@@ -79,7 +94,7 @@ def read_config(filename):
     if 'restart' in cf:
         d["need_restart"] = cf.getboolean("restart", "need_restart")
         d["restart_path"] = parse_process_path(cf.get("restart", "restart_path"))
-        d["process_name"] = cf.get("restart", "process_name")
+        # d["process_name"] = cf.get("restart", "process_name")
         d["restart_interval"] = time_to_seconds(cf.get("restart", "restart_interval", fallback="00:00:60"))
 
     d['host'] = cf.get('web', 'ip', fallback='localhost')
