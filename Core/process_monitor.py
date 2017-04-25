@@ -14,7 +14,6 @@ from psutil import STATUS_ZOMBIE, STATUS_DEAD, STATUS_STOPPED
 import time
 from copy import copy
 import zipfile
-import email_sender
 import log_file_name
 import sys
 import threading
@@ -34,25 +33,25 @@ alive_dict = {}
 MB_UNIT = 1024 * 1024
 
 
-def find_jarfile_index(cmdline):
-    for idx, param in enumerate(cmdline):
-        if param.find("-jar") != -1:
-            return idx + 1
+# def find_jarfile_index(cmdline):
+#     for idx, param in enumerate(cmdline):
+#         if param.find("-jar") != -1:
+#             return idx + 1
 
 
-def convert_to_abs_path(cwd, cmdline):
-    """
-    将jar包名改为绝对目录，并以此作为proc的id。
-    :param cwd: 
-    :param cmdline: 
-    :return: cmdline[idx] 作为 proc_id
-    """
-    idx = find_jarfile_index(cmdline)
-    if cmdline[idx].startswith('.'):
-        cmdline[idx] = cmdline[idx].replace(".", cwd, 1).replace("\\", "/")
-    elif (cmdline[idx].count("/") + cmdline[idx].count("\\")) == 0:
-        cmdline[idx] = cwd.replace("\\", "/") + "/" + cmdline[idx]
-    return cmdline[idx]
+# def convert_to_abs_path(cwd, cmdline):
+#     """
+#     将jar包名改为绝对目录，并以此作为proc的id。
+#     :param cwd:
+#     :param cmdline:
+#     :return: cmdline[idx] 作为 proc_id
+#     """
+#     idx = find_jarfile_index(cmdline)
+#     if cmdline[idx].startswith('.'):
+#         cmdline[idx] = cmdline[idx].replace(".", cwd, 1).replace("\\", "/")
+#     elif (cmdline[idx].count("/") + cmdline[idx].count("\\")) == 0:
+#         cmdline[idx] = cwd.replace("\\", "/") + "/" + cmdline[idx]
+#     return cmdline[idx]
 
 
 def parse_proc_id_tomcat(cwd):
@@ -94,7 +93,7 @@ class ProcDao(object):
             return self.__hash__() == other.__hash__()
 
     def __str__(self):
-        return "%s: %d, path=%s" % (self.name, self.pid, str(self.cmdline))
+        return "%s: %d, path=%s" % (self.name, self.pid, str(self.proc_uid))
 
     def regularization(self):
         """
@@ -114,9 +113,9 @@ class ProcDao(object):
 
         if self.is_jar:
             # 修改jar包为绝对路径
-            self.proc_uid = convert_to_abs_path(self.cwd, self.cmdline)
+            self.proc_uid = self.get_jar_path()
         elif self.is_tomcat:
-            self.proc_uid = parse_proc_id_tomcat(self.cwd)
+            self.proc_uid = self.get_tomcat_root()
 
     def is_alive(self):
         try:
@@ -141,6 +140,37 @@ class ProcDao(object):
         except Exception as e:
             print("Error when ProcDao.restart()", e)
 
+    def get_tomcat_root(self):
+        assert self.is_tomcat
+        tomcat_root = None
+        for command in self.cmdline:
+            if command.find("-Dcatalina.home=") != -1:
+                # print("if command.find(‘-Dcatalina.home=’) != -1:", command)
+                tomcat_root = command.replace("-Dcatalina.home=", "").replace("\\", "/")
+                break
+        assert tomcat_root is not None
+        # self.proc_uid = tomcat_root
+        return tomcat_root
+
+    def get_jar_path(self):
+        idx = None
+        for idx_tmp, param in enumerate(self.cmdline):
+            if param.find("-jar") != -1:
+                idx = idx_tmp + 1
+                break
+        assert idx is not None
+        candidate = self.cmdline[idx]
+        if candidate.startswith('.'):
+            # 相对路径
+            out = candidate.replace(".", self.cwd, 1).replace("\\", "/")
+        elif (candidate.count("/") + candidate.count("\\")) == 0:
+            # root目录启动
+            out = self.cwd + "/" + candidate
+        else:
+            # jar包名为绝对路径
+            out = candidate
+        return out
+
 
 def popen_in_thread(arg_list, **kwargs):
     psutil.Popen(arg_list, stdout=PIPE, **kwargs)
@@ -159,7 +189,7 @@ def monitor_init(config_dict):
     for path in customized_process_path_list:
         if path.lower().find("tomcat") != -1:
             alive_dict[parse_proc_id_tomcat(path)] = [False, path, "tomcat"]
-        elif path.find(".jar") != -1:
+        elif path.find(".jar") != -1 or path.find("-jar") != -1:
             alive_dict[path] = [False, path, "jar"]
 
     print("Before init scanning, status_dict is:", alive_dict, sep="\n")
@@ -285,7 +315,7 @@ def process_state(name, limit=50):
     io_write_cnt = 0
     try:
         for key, proc_dao in target_running_process_dict.iteritems():
-            print(type(proc_dao))
+            # print(proc_dao.pid, proc_dao.proc_uid)
             proc = proc_dao.process_bind
             with proc.oneshot():
                 memory_cnt += proc.memory_percent()
