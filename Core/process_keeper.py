@@ -1,30 +1,22 @@
 import psutil
-from process_monitor import get_pids_by_name
 from subprocess import PIPE
 
 GLOBAL_DEBUG = 0
 
 
-def process_killer(targetProcessName):
-    idList = get_pids_by_name(targetProcessName)
-    if GLOBAL_DEBUG:
-        print "process_killer( %s)" % targetProcessName,
-        print "idList: %s" % str(idList)
-    for pid in idList:
-        try:
-            p = psutil.Process(pid)
-            p.kill()
-        except Exception as e:
-            print("Warning", e)
-
-
-def process_starter(path):
-    try:
-        p = psutil.Popen([path, ])
-    except Exception as e:
-        print("Restart fail %s"%path, e)
-        p = None
-    return p
+def process_killer_by_name(target_process_name):
+    """
+    kill process by process name.
+    :param target_process_name: string
+    :return: None 
+    """
+    proc_name = target_process_name.lower()
+    for proc in psutil.process_iter():
+        if proc.name().lower() == proc_name:
+            try:
+                proc.terminate()
+            except Exception as e:
+                print("Fail at process_killer_by_name()", e)
 
 
 if __name__ == "__main__":
