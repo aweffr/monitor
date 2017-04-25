@@ -33,14 +33,16 @@ def getdata():
             "time": time.strftime("%H:%M:%S", time.localtime()),
             "cpu_percent": tmp[1],
             "mem_percent": tmp[2],
-            "process": tmp[3]
+            "process": tmp[3],
+            "net_io": tmp[4]
         }
     else:
         d = {
             "time": time.strftime("%H:%M:%S", time.localtime()),
             "cpu_percent": 0,
             "mem_percent": 0,
-            "process": 0
+            "process": 0,
+            "net_io": 0
         }
     return json.dumps(d)
 

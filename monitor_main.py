@@ -33,7 +33,7 @@ def watcher():
     )
 
 
-def process_keeper_function(configDict, scan_time_cycle=60, quit_event=None):
+def process_keeper_function(configDict, scan_time_cycle=5, quit_event=None):
     """
     守护用线程，用于重启和终止进程。
     :param configDict: 

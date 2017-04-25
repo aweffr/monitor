@@ -34,6 +34,11 @@
             <div id="process_chart" style="width: 750px;height:250px;"></div>
         </div>
     </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div id="io_chart" style="width: 750px;height:250px;"></div>
+        </div>
+    </div>
 </div>
 <!-- 生成图表，动态刷新 -->
 <script type="text/javascript">
@@ -41,25 +46,29 @@
     yy_cpu = [];
     yy_mem = [];
     yy_process = [];
+    yy_io = [];
 
     function addData(jsonData, shift) {
         xx.push(jsonData['time']);
         yy_cpu.push(jsonData['cpu_percent']);
         yy_mem.push(jsonData['mem_percent']);
         yy_process.push(jsonData['process']);
+        yy_io.push(jsonData['net_io']);
         if (shift) {
             xx.shift();
             yy_cpu.shift();
             yy_mem.shift();
             yy_process.shift();
+            yy_io.shift();
         }
     }
 
     function debug(jsonData) {
         $('#tt').text(
-            "cpu : " + jsonData['cpu_percent'] + "\n" +
-            "global_memory : " + jsonData['mem_percent'] + "\n" +
-            "process_memory : " + jsonData['process']
+            "cpu : " + jsonData['cpu_percent'] + "\n"
+            + "global_memory : " + jsonData['mem_percent'] + "\n"
+            + "process_memory : " + jsonData['process'] + "\n"
+            + "net_io : " + jsonData['net_io'] + "\n"
         );
     }
 
@@ -67,7 +76,8 @@
         time: 0,
         cpu_percent: 0.0,
         mem_percent: 0.0,
-        process: 0.0
+        process: 0.0,
+        net_io: 0.0
     };
     for (var i = 0; i < 30; ++i) {
         addData(initJson, false);
@@ -76,6 +86,7 @@
     var cpu_chart = echarts.init(document.getElementById("cpu_chart"));
     var mem_chart = echarts.init(document.getElementById("mem_chart"));
     var process_chart = echarts.init(document.getElementById("process_chart"));
+    var io_chart = echarts.init(document.getElementById("io_chart"));
 
     function updateOption() {
         cpu_chart.setOption({
@@ -105,6 +116,15 @@
                 data: yy_process
             }]
         });
+        io_chart.setOption({
+            xAxis: {
+                data: xx
+            },
+            series: [{
+                name: 'net_io',
+                data: yy_io
+            }]
+        })
     }
 
     cpu_option = {
@@ -197,10 +217,40 @@
         ]
     };
 
+    net_io_option = {
+        title: {
+            text: 'net_io_status'
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: xx
+        },
+        yAxis: {
+            boundaryGap: [0, '50%'],
+            type: 'value',
+            min: 0,
+        },
+        series: [
+            {
+                name: 'net_io',
+                type: 'line',
+                smooth: true,
+                symbol: 'none',
+                stack: 'a',
+                areaStyle: {
+                    normal: {}
+                },
+                data: yy_io
+            }
+        ]
+    };
+
     if (cpu_option && typeof cpu_option === "object") {
         cpu_chart.setOption(cpu_option, true);
         mem_chart.setOption(mem_option, true);
         process_chart.setOption(process_option, true);
+        io_chart.setOption(net_io_option, true);
     }
 
 
