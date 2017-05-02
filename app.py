@@ -1,4 +1,5 @@
 # coding=utf-8
+from __future__ import print_function
 import sys
 sys.path.extend(["./Core", ])
 from flask import Flask, render_template
@@ -46,6 +47,17 @@ def getdata():
         }
     return json.dumps(d)
 
+def app_run(host, port):
+    global app
+    try:
+        app.run(host=host, port=port)
+    except Exception as e:
+        print("Web Interrupted!", e)
+        sys.exit(1)
+    finally:
+        monitor_main.quitEvent.set()
+
+
 
 if __name__ == "__main__":
     t1 = threading.Thread(target=monitor_main.run)
@@ -55,7 +67,7 @@ if __name__ == "__main__":
         time.sleep(1)
     d = monitor_main.configDict
     t2 = threading.Thread(
-        target=app.run,
+        target=app_run,
         kwargs={'host': d['host'], 'port': d['port']})
     t2.run()
     t1.join()
