@@ -80,7 +80,11 @@ def run():
         sys.exit(-1)
     print("Configuration Load Complete.")
 
-    process_monitor.monitor_init(configDict)
+    try:
+        process_monitor.monitor_init(configDict)
+    except Exception as e:
+        print("Error at monitor_init(dict)", e)
+        sys.exit(1)
 
     t1 = threading.Thread(
         target=watcher

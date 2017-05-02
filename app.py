@@ -54,8 +54,6 @@ if __name__ == "__main__":
     while not monitor_main.configLoadComplete[0]:
         time.sleep(1)
     d = monitor_main.configDict
-    if d['host'] == '127.0.0.1' or d['host'] == 'localhost':
-        d['host'] = get_local_ip()
     t2 = threading.Thread(
         target=app.run,
         kwargs={'host': d['host'], 'port': d['port']})

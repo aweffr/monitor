@@ -18,15 +18,9 @@ if __name__ == "__main__":
     import random
     from pprint import pprint
 
-    mc = MyMemcacheUtils.Client(['localhost:20174'], debug=1)
-    mc.set('key1', 'goodgoodsutdy')
-    s = list('goodgoodsutdygoodgoodsutdygoodgoodsutdygoodgoodsutdygoodgoodsutdy')
-    for i in range(10000):
-        random.shuffle(s)
-        mc.set(str(i), "".join(s))
-    value = mc.get('key1')
-    print value
-    slab_set = mc.get_slab_stats()
-    print slab_set
-    # print slab_set
-    pprint(mc.get_keys([1, ]))
+    mc = MyMemcacheUtils.Client(['101.37.77.231:20174'], debug=1)
+    # mc.set("abc", "acd")
+    # mc.set("lal", "lol")
+    print mc.get("abc")
+    print mc.get("lal")
+    # print mc.get("rainbow")

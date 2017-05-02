@@ -185,11 +185,12 @@ def monitor_init(config_dict):
     target_name_list = config_dict['process_name']
 
     customized_process_path_list = config_dict['restart_path']
-    for path in customized_process_path_list:
-        if path.lower().find("tomcat") != -1:
-            alive_dict[parse_proc_id_tomcat(path)] = [False, path, "tomcat"]
-        elif path.find(".jar") != -1 or path.find("-jar") != -1:
-            alive_dict[path] = [False, path, "jar"]
+    if config_dict['need_restart']:
+        for path in customized_process_path_list:
+            if path.lower().find("tomcat") != -1:
+                alive_dict[parse_proc_id_tomcat(path)] = [False, path, "tomcat"]
+            elif path.find(".jar") != -1 or path.find("-jar") != -1:
+                alive_dict[path] = [False, path, "jar"]
 
     print("Before init scanning, status_dict is:", alive_dict, sep="\n")
 
