@@ -31,8 +31,8 @@
       <file leaf-file-name="app.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="945">
-              <caret line="65" column="49" lean-forward="true" selection-start-line="65" selection-start-column="49" selection-end-line="65" selection-end-column="49" />
+            <state relative-caret-position="700">
+              <caret line="61" column="26" lean-forward="false" selection-start-line="61" selection-start-column="26" selection-end-line="61" selection-end-column="26" />
               <folding>
                 <element signature="e#15#52#0" expanded="true" />
               </folding>
@@ -43,8 +43,8 @@
       <file leaf-file-name="monitor_main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/monitor_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="735">
-              <caret line="22" column="44" lean-forward="false" selection-start-line="22" selection-start-column="35" selection-end-line="22" selection-end-column="44" />
+            <state relative-caret-position="525">
+              <caret line="79" column="20" lean-forward="true" selection-start-line="79" selection-start-column="20" selection-end-line="79" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -54,7 +54,7 @@
         <entry file="file://$PROJECT_DIR$/Core/process_monitor.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1064">
-              <caret line="201" column="37" lean-forward="true" selection-start-line="201" selection-start-column="37" selection-end-line="201" selection-end-column="37" />
+              <caret line="201" column="37" lean-forward="false" selection-start-line="201" selection-start-column="37" selection-end-line="201" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -753,7 +753,14 @@
       <option name="project" value="LOCAL" />
       <updated>1493709120298</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="保证程序能够退出">
+      <created>1493710179667</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1493710179667</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -791,7 +798,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="增加文本监控" />
     <MESSAGE value="更正路径" />
     <MESSAGE value="pip freeze output" />
     <MESSAGE value="增加路径重启功能。" />
@@ -816,7 +822,8 @@
     <MESSAGE value="调整net_io，只监视eth0网卡的变化量" />
     <MESSAGE value="在Init步骤加上try...catch" />
     <MESSAGE value="给程序的web端加上quitEvent机制" />
-    <option name="LAST_COMMIT_MESSAGE" value="给程序的web端加上quitEvent机制" />
+    <MESSAGE value="保证程序能够退出" />
+    <option name="LAST_COMMIT_MESSAGE" value="保证程序能够退出" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1057,7 +1064,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="474">
           <caret line="1369" column="40" lean-forward="false" selection-start-line="1369" selection-start-column="40" selection-end-line="1369" selection-end-column="40" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1065,7 +1071,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="334">
           <caret line="650" column="27" lean-forward="false" selection-start-line="650" selection-start-column="23" selection-end-line="650" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1122,7 +1127,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2135">
           <caret line="61" column="0" lean-forward="false" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1130,7 +1134,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="611">
           <caret line="1656" column="31" lean-forward="true" selection-start-line="1656" selection-start-column="31" selection-end-line="1656" selection-end-column="31" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1145,23 +1148,23 @@
     <entry file="file://$PROJECT_DIR$/Core/process_monitor.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1064">
-          <caret line="201" column="37" lean-forward="true" selection-start-line="201" selection-start-column="37" selection-end-line="201" selection-end-column="37" />
+          <caret line="201" column="37" lean-forward="false" selection-start-line="201" selection-start-column="37" selection-end-line="201" selection-end-column="37" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/monitor_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="22" column="44" lean-forward="false" selection-start-line="22" selection-start-column="35" selection-end-line="22" selection-end-column="44" />
+        <state relative-caret-position="525">
+          <caret line="79" column="20" lean-forward="true" selection-start-line="79" selection-start-column="20" selection-end-line="79" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="945">
-          <caret line="65" column="49" lean-forward="true" selection-start-line="65" selection-start-column="49" selection-end-line="65" selection-end-column="49" />
+        <state relative-caret-position="700">
+          <caret line="61" column="26" lean-forward="false" selection-start-line="61" selection-start-column="26" selection-end-line="61" selection-end-column="26" />
           <folding>
             <element signature="e#15#52#0" expanded="true" />
           </folding>
