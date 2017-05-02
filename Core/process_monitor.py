@@ -20,8 +20,7 @@ import threading
 import email_sender
 from read_config import read_config
 from csv_writer import CsvWriter
-from collections import deque
-from collections import OrderedDict
+from collections import deque, OrderedDict
 from subprocess import PIPE
 
 GLOBAL_DEBUG = False
@@ -288,14 +287,29 @@ def get_memory_state():
 #     )
 #     return memoryLogString
 
+net_status_queue = deque(maxlen=50)
 
-def getNetworkState():
+
+def get_network_state():
     """
     获得全局网络IO状态
     :return: 类字典对象‘snetio’, 属性有'bytes_recv', 'bytes_sent', 'packets_recv', 'packets_sent'
     """
-    io_state = psutil.net_io_counters()
-    return io_state
+    global net_status_queue
+    io_state = psutil.net_io_counters(pernic=True)
+    assert 'eth0' in io_state
+    io_state = io_state['eth0']
+    bs, br = io_state.bytes_sent, io_state.bytes_recv
+    tmp = (bs, br, time.time())
+    net_status_queue.append(tmp)
+    if len(net_status_queue) > 1:
+        tmp1, tmp2 = net_status_queue[-1], net_status_queue[-2]
+        delta_time = tmp1[2] - tmp2[2]
+        delta_sent = (tmp1[0] - tmp2[0] + 0.0) / delta_time
+        delta_recv = (tmp1[1] - tmp2[1] + 0.0) / delta_time
+    else:
+        delta_sent, delta_recv = 0.0, 0.0
+    return delta_sent, delta_recv
 
 
 def process_state(name, limit=50):
@@ -380,11 +394,9 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
         global_memory_state = get_memory_state()
         td['memory_percent'], td['memory_used'], td['memory_total'] = global_memory_state
         # 获取网络IO状态
-        network_status = getNetworkState()
-        td['bytes_sent'] = network_status.bytes_sent
-        td['bytes_recv'] = network_status.bytes_recv
-        td['packets_sent'] = network_status.packets_sent
-        td['packets_recv'] = network_status.packets_recv
+        network_status = get_network_state()
+        td['bytes_sent'] = network_status[0]
+        td['bytes_recv'] = network_status[1]
         # 目标进程状态
         refresh_target_processes(target_process_name_list)
         process_status_dict, is_exceed = process_state(target_process_name_list, memory_limit)
@@ -413,8 +425,8 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
         csv_f.dict_to_csv(td)
         t2 = time.localtime()
 
-        if line_number % 120 == 0:
-            csv_f.flush()
+        # if line_number % 120 == 0:
+        #     csv_f.flush()
 
         if is_exceed:
             try:
