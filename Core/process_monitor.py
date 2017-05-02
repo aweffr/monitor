@@ -64,9 +64,9 @@ def parse_proc_id_tomcat(cwd):
     assert isinstance(cwd, str)
     assert cwd.lower().find("tomcat") != -1
     if cwd.find("bin") != -1:
-        return cwd[:cwd.lower().find("bin")].strip("\\").strip("/")
+        return cwd[:cwd.lower().find("bin")].rstrip("\\").rstrip("/")
     else:
-        return cwd.strip("\\").strip("/")
+        return cwd.rstrip("\\").rstrip("/")
 
 
 class ProcDao(object):
