@@ -70,5 +70,10 @@ if __name__ == "__main__":
         target=app_run,
         kwargs={'host': d['host'], 'port': d['port']})
     t2.run()
-    t1.join()
-    t2.join()
+    try:
+        t1.join()
+        t2.join()
+    except Exception as e:
+        pass
+    finally:
+        sys.exit(1)
