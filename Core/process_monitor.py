@@ -32,6 +32,8 @@ alive_dict = {}
 MB_UNIT = 1024 * 1024
 KB_UNIT = 1024
 
+net_clock_start = 0
+
 
 def parse_proc_id_tomcat(cwd):
     """
@@ -305,7 +307,28 @@ def need_to_switch(t1, t2, log_interval):
     return (t2.tm_yday - t1.tm_yday) > log_interval
 
 
+def send_warning_email_netio(config_dict, email_message_queue, email_event):
+    # generate Email context
+    try:
+        csv_email_f = CsvWriter(config_dict['email_context'])
+        csv_email_f.queue_dict_to_csv(email_message_queue)
+        csv_email_f.close()
+    except Exception as e:
+        print("Error at generate Email file!", e)
+
+    # Send the Email
+    if email_event is None or not email_event.isSet():
+        thd = threading.Thread(
+            target=wrapped_email_sender,
+            kwargs={'config_dict': config_dict, 'xls_format': True}
+        )
+        thd.run()
+        if email_event is not None:
+            email_event.set()
+
+
 def monitor(share_queue, quit_event, email_event, config_dict=dict()):
+    global net_clock_start
     try:
         target_process_name_list = config_dict["target_process"]
         interval = config_dict["interval"]
@@ -320,7 +343,7 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
 
     line_number = 0
     continue_flag = True
-    emailMessageQueue = deque(maxlen=email_length)
+    email_message_queue = deque(maxlen=email_length)
     if log_interval == 7:
         log_opt = 'week'
     elif log_interval == 30:
@@ -330,6 +353,9 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
     t1 = time.localtime()
     _logFileName = log_file_name.log_file_name(opt=log_opt)
     csv_f = CsvWriter(_logFileName, path=log_path)
+
+    # net_upper_bound的单位是Kb
+    net_upper_bound = (1024 * config_dict['net_io_upper_bound']) * (config_dict['net_io_limit'] / 100)
 
     while continue_flag is True:
         # logTempDict 为单次记录信息的项
@@ -347,9 +373,11 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
         network_status = get_network_state()
         td['bytes_sent'] = network_status[0]
         td['bytes_recv'] = network_status[1]
+        net_exceed = (td['bytes_recv'] + td['bytes_sent']) > net_upper_bound
+
         # 目标进程状态
         refresh_target_processes(target_process_name_list)
-        process_status_dict, is_exceed = process_state(target_process_name_list, memory_limit)
+        process_status_dict, process_mem_exceed = process_state(target_process_name_list, memory_limit)
         if process_status_dict['process_total_numbers'] > 0:
             td['process_name'] = process_status_dict['process_name']
             td['process_memory_occupied'] = process_status_dict['memory_occupied']
@@ -367,21 +395,20 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
                  td['process_memory_occupied'], td['bytes_recv'] + td['bytes_sent'])
             )
 
-        # 将本次记录项放入限长队列
-        emailMessageQueue.append(td)
+        # 将本次记录项放入邮箱记录队列
+        email_message_queue.append(td)
 
         # ----------write dict to csv file----------------
-        # print("Now writing at line: %d" % line_number)
         csv_f.dict_to_csv(td)
         t2 = time.localtime()
 
         # if line_number % 120 == 0:
         #     csv_f.flush()
 
-        if is_exceed:
+        if process_mem_exceed:
             try:
                 csv_email_f = CsvWriter(email_context)
-                csv_email_f.queue_dict_to_csv(emailMessageQueue)
+                csv_email_f.queue_dict_to_csv(email_message_queue)
                 csv_email_f.close()
             except Exception as e:
                 print("Error at generate Email file!", e)
@@ -393,6 +420,13 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
                 thd.run()
                 if email_event is not None:
                     email_event.set()
+        elif net_exceed:
+            if net_clock_start == 0:
+                net_clock_start = time.time()
+            elif time.time() - net_clock_start > config_dict['net_io_time_limit']:
+                send_warning_email_netio(config_dict, email_message_queue, email_event)
+                net_clock_start = 0
+
         if quit_event is not None and quit_event.isSet():
             continue_flag = False  # <==> break
             csv_f.close()
