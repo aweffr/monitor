@@ -11,12 +11,6 @@
 <div class="page-header">
     <h1>Monitor</h1>
 </div>
-<!--<div class="container">-->
-<!--<div id="tt"></div>-->
-<!--<div id="cpu_chart" style="width: 600px;height:200px;"></div>-->
-<!--<div id="mem_chart" style="width: 600px;height:200px;"></div>-->
-<!--<div id="process_chart" style="width: 600px;height:200px;"></div>-->
-<!--</div>-->
 <div id="tt"></div>
 <div class="container">
     <div class="row clearfix">
@@ -42,11 +36,12 @@
 </div>
 <!-- 生成图表，动态刷新 -->
 <script type="text/javascript">
-    xx = [];
-    yy_cpu = [];
-    yy_mem = [];
-    yy_process = [];
-    yy_io = [];
+    var xx = [];
+    var yy_cpu = [];
+    var yy_mem = [];
+    var yy_process = [];
+    var yy_io = [];
+    var io_max = 10 * 1024; // Unit: Mb
 
     function addData(jsonData, shift) {
         xx.push(jsonData['time']);
@@ -63,7 +58,7 @@
         }
     }
 
-    function debug(jsonData) {
+    function text_update(jsonData) {
         $('#tt').text(
             "cpu : " + jsonData['cpu_percent'] + "\n"
             + "global_memory : " + jsonData['mem_percent'] + "\n"
@@ -229,7 +224,7 @@
         yAxis: {
             boundaryGap: [0, '50%'],
             type: 'value',
-            min: 0,
+            min: 0
         },
         series: [
             {
@@ -253,6 +248,21 @@
         io_chart.setOption(net_io_option, true);
     }
 
+    function io_max_update() {
+        $.ajax({
+            type: "GET",
+            url: "/get_io_max",
+            dataType: "json",
+            success: function (jsonData) {
+                io_max = jsonData['io_max'];
+            }
+        })
+    }
+
+    $('#io_chart').ready(
+        io_max_update()
+    );
+
 
     $(document).ready(
         setInterval(function () {
@@ -261,14 +271,13 @@
                 url: "/getdata",
                 dataType: "json",
                 success: function (jsonData) {
-                    debug(jsonData);
+                    text_update(jsonData);
                     addData(jsonData, true);
                     updateOption();
                 }
             })
         }, 1000)
-    )
-
+    );
 
 </script>
 </body>
