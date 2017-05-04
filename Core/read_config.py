@@ -72,7 +72,7 @@ def read_config(filename):
 
     d = dict()
 
-    d["debug_level"] = cf.get("debug", "debug_level", fallback="0")
+    d["debug_level"] = int(cf.get("debug", "debug_level", fallback="0"))
     d["debug_file"] = cf.get("debug", "debug_file", fallback="program_log.txt")
 
     d["from_addr"] = cf.get("email", "from_addr")
