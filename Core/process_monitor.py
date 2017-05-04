@@ -90,13 +90,14 @@ class ProcDao(object):
             elif params.lower().find('tomcat') != -1:
                 self.is_tomcat = True
                 break
-        assert self.is_jar or self.is_tomcat
 
         if self.is_jar:
             # 修改jar包为绝对路径
             self.proc_uid = self.get_jar_path()
         elif self.is_tomcat:
             self.proc_uid = self.get_tomcat_root()
+        else:
+            self.proc_uid = self.general_proc_uid()
 
     def is_alive(self):
         try:
@@ -118,6 +119,8 @@ class ProcDao(object):
             elif self.is_tomcat:
                 self.process_bind = psutil.Popen(self.cmdline, stdout=PIPE, cwd=self.proc_uid)
                 self.pid = self.process_bind.pid
+            else:
+                self.process_bind = psutil.Popen(self.cmdline, stdout=PIPE)
         except Exception as e:
             print("Error when ProcDao.restart()", e)
 
@@ -149,6 +152,10 @@ class ProcDao(object):
             # jar包名为绝对路径
             out = candidate
         return out
+
+    def general_proc_uid(self):
+        return " ".join(self.cmdline)
+
 
 
 def popen_in_thread(arg_list, **kwargs):
