@@ -25,11 +25,6 @@
     </div>
     <div class="row clearfix">
         <div class="col-md-12 column">
-            <div id="process_chart" style="width: 750px;height:250px;"></div>
-        </div>
-    </div>
-    <div class="row clearfix">
-        <div class="col-md-12 column">
             <div id="io_chart" style="width: 750px;height:250px;"></div>
         </div>
     </div>
@@ -41,7 +36,6 @@
     var yy_mem = [];
     var yy_process = [];
     var yy_io = [];
-    var io_max = 10 * 1024; // Unit: Mb
 
     function addData(jsonData, shift) {
         xx.push(jsonData['time']);
@@ -80,7 +74,6 @@
 
     var cpu_chart = echarts.init(document.getElementById("cpu_chart"));
     var mem_chart = echarts.init(document.getElementById("mem_chart"));
-    var process_chart = echarts.init(document.getElementById("process_chart"));
     var io_chart = echarts.init(document.getElementById("io_chart"));
 
     function updateOption() {
@@ -97,19 +90,16 @@
             xAxis: {
                 data: xx
             },
-            series: [{
-                name: 'mem_percent',
-                data: yy_mem
-            }]
-        });
-        process_chart.setOption({
-            xAxis: {
-                data: xx
-            },
-            series: [{
-                name: 'process_percent',
-                data: yy_process
-            }]
+            series: [
+                {
+                    name: 'mem_percent',
+                    data: yy_mem
+                },
+                {
+                    name: 'process_percent',
+                    data: yy_process
+                }
+            ]
         });
         io_chart.setOption({
             xAxis: {
@@ -156,6 +146,9 @@
         title: {
             text: 'Memory Percent'
         },
+        legend: {
+            data: ['mem_percent', 'process_percent']
+        },
         xAxis: {
             type: 'category',
             boundaryGap: false,
@@ -178,26 +171,7 @@
                     normal: {}
                 },
                 data: yy_mem
-            }
-        ]
-    };
-
-    process_option = {
-        title: {
-            text: 'Process Percent'
-        },
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: xx
-        },
-        yAxis: {
-            boundaryGap: [0, '50%'],
-            type: 'value',
-            min: 0,
-            max: 100
-        },
-        series: [
+            },
             {
                 name: 'process_percent',
                 type: 'line',
@@ -244,25 +218,8 @@
     if (cpu_option && typeof cpu_option === "object") {
         cpu_chart.setOption(cpu_option, true);
         mem_chart.setOption(mem_option, true);
-        process_chart.setOption(process_option, true);
         io_chart.setOption(net_io_option, true);
     }
-
-    function io_max_update() {
-        $.ajax({
-            type: "GET",
-            url: "/get_io_max",
-            dataType: "json",
-            success: function (jsonData) {
-                io_max = jsonData['io_max'];
-            }
-        })
-    }
-
-    $('#io_chart').ready(
-        io_max_update()
-    );
-
 
     $(document).ready(
         setInterval(function () {
