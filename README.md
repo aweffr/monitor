@@ -19,3 +19,17 @@
 前台:
 - 通过http://{{target_server_ip}}:port访问。
 - 具有四个动态的图表，分别显示当前服务器CPU, Memory, Process_Memory, NetIO的状态。
+
+安装方法:
+- 自动:
+    - 可通过install_dependency.sh和run.sh直接安装。
+- 手动:
+    - 若自动安装出错，可在程序根目录的shell下执行以下命令:
+    - 1.安装依赖:
+        - pip install virtualenv # virtualenv用于克隆python
+        - virtualenv ./env       # 创建本地克隆的python环境env。
+        - source ./env/bin/activate # 本步骤用于将python启动路径劫持为本程序下env所在的python
+        - pip install -r ./requirements.txt
+    - 2.运行:
+        - source ./env/bin/activate # 激活本地python环境
+        - nohup python app.py > out_log &
