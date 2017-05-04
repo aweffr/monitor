@@ -405,6 +405,10 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
         # if line_number % 120 == 0:
         #     csv_f.flush()
 
+        # 当网络未超限，将计时器置为0
+        if not net_exceed:
+            net_clock_start = 0
+
         if process_mem_exceed:
             try:
                 csv_email_f = CsvWriter(email_context)
@@ -420,7 +424,7 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
                 thd.run()
                 if email_event is not None:
                     email_event.set()
-        elif net_exceed:
+        if net_exceed:
             if net_clock_start == 0:
                 net_clock_start = time.time()
             elif time.time() - net_clock_start > config_dict['net_io_time_limit']:
