@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import print_function
 import sys
+
 sys.path.extend(["./Core", ])
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
@@ -25,6 +26,12 @@ def ajax_test():
     return render_template("ajaxtest.html")
 
 
+@app.route("/get_io_max")
+def get_io_max():
+    d = {'io_max': monitor_main.configDict['net_io_limit']}
+    return json.dumps(d)
+
+
 @app.route("/getdata")
 def getdata():
     if len(monitor_main.shareQueue) > 0:
@@ -46,6 +53,7 @@ def getdata():
         }
     return json.dumps(d)
 
+
 def app_run(host, port):
     global app
     try:
@@ -55,7 +63,6 @@ def app_run(host, port):
         sys.exit(1)
     finally:
         monitor_main.quitEvent.set()
-
 
 
 if __name__ == "__main__":
@@ -73,6 +80,6 @@ if __name__ == "__main__":
         t1.join()
         t2.join()
     except Exception as e:
-        pass
+        print('Error happens at t1.join() or t2.join()', e)
     finally:
         sys.exit(1)
