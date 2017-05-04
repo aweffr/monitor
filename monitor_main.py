@@ -2,7 +2,6 @@
 
 from collections import deque
 import sys
-
 sys.path.extend(["./Core", ])
 import process_monitor
 import email_sender
@@ -10,6 +9,8 @@ import process_keeper
 import threading
 import read_config
 import time
+
+debug_file = None
 
 shareQueue = deque(maxlen=100)
 quitEvent = threading.Event()
@@ -79,6 +80,12 @@ def run():
         print("Configuration File Wrong!", e)
         sys.exit(-1)
     print("Configuration Load Complete.")
+
+    # debug模式下，将输出重定向至文件流
+    if configDict['debug_level'] > 0:
+        debug_file = open(configDict['debug_file'], 'w')
+        sys.stdout = debug_file
+        sys.stderr = debug_file
 
     try:
         process_monitor.monitor_init(configDict)
