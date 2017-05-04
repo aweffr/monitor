@@ -36,6 +36,7 @@ def time_to_seconds(string):
     else:
         return 3600 * string[0] + 60 * string[1] + string[2]
 
+
 def parse_process_path(s):
     s = str(s).replace("\\", "/")
     s = s.strip()
@@ -48,6 +49,7 @@ def parse_process_path(s):
     else:
         out.append(s)
     return out
+
 
 def parse_process_name(s):
     s = str(s)
@@ -69,6 +71,10 @@ def read_config(filename):
     cf.read(filename, encoding='utf-8')
 
     d = dict()
+
+    d["debug_level"] = cf.get("debug", "debug_level", fallback="0")
+    d["debug_file"] = cf.get("debug", "debug_file", fallback="program_log.txt")
+
     d["from_addr"] = cf.get("email", "from_addr")
     d["password"] = cf.get("email", "password")
     d["to_addr"] = cf.get("email", "to_addr").split(",")
@@ -76,14 +82,21 @@ def read_config(filename):
     d["smtp_server"] = cf.get("email", "smtp")
     d["send_interval"] = time_to_seconds(cf.get("email", "send_interval"))
 
-    d["target_process"] = cf.get("moniter", "target")
-    d["process_name"] = parse_process_name(cf.get("moniter", "target"))
-    d["memory_limit"] = float(cf.get("moniter", "memory_limit"))
-    d["interval"] = float(cf.get("moniter", "interval"))
+    d["target_process"] = cf.get("monitor", "target")
+    d["process_name"] = parse_process_name(cf.get("monitor", "target"))
+    d["memory_limit"] = float(cf.get("monitor", "memory_limit"))
+    d["interval"] = float(cf.get("monitor", "interval", fallback='1.0'))
 
-    d["log_path"] = cf.get("file", "log_path").replace("\\", "/")
+    # net_io_upper_bound的单位为MB，整数小数均可
+    d['net_io_upper_bound'] = cf.getfloat('monitor', 'net_io_upper_bound')
+    # net_io_limit为上限（百分比），当高于该百分比并超过峰值持续时间(net_io_time_limit)会邮件报警
+    d['net_io_limit'] = cf.getfloat('monitor', 'net_io_limit')
+    # net_io_time_limit为峰值持续时间
+    d['net_io_time_limit'] = cf.getfloat('monitor', 'net_io_time_limit')
+
+    d["log_path"] = cf.get("file", "log_path", fallback='./Log/').replace("\\", "/")
     d["log_interval"] = int(cf.get("file", "log_interval"))
-    d["email_context"] = cf.get("file", "email_context")
+    d["email_context"] = cf.get("file", "email_context", fallback='./Log/email_context.txt').replace("\\", "/")
     d["email_length"] = int(cf.get("file", "email_length"))
 
     d["white_list"] = cf.get("white_list", "process").split(",")
