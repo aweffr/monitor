@@ -81,5 +81,7 @@ if __name__ == "__main__":
         t2.join()
     except Exception as e:
         print('Error happens at t1.join() or t2.join()', e)
+        if monitor_main.debug_file is not None:
+            monitor_main.debug_file.close()
     finally:
         sys.exit(1)
