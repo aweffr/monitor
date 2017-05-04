@@ -122,7 +122,7 @@
             data: xx
         },
         yAxis: {
-            boundaryGap: [0, '50%'],
+            boundaryGap: false,
             type: 'value',
             min: 0,
             max: 100
@@ -155,18 +155,16 @@
             data: xx
         },
         yAxis: {
-            boundaryGap: [0, '50%'],
+            boundaryGap: false,
             type: 'value',
-            min: 0,
-            max: 100
+            min: 0
         },
         series: [
             {
                 name: 'mem_percent',
                 type: 'line',
-                smooth: true,
+                smooth: false,
                 symbol: 'none',
-                stack: 'a',
                 areaStyle: {
                     normal: {}
                 },
@@ -175,9 +173,8 @@
             {
                 name: 'process_percent',
                 type: 'line',
-                smooth: true,
+                smooth: false,
                 symbol: 'none',
-                stack: 'a',
                 areaStyle: {
                     normal: {}
                 },
@@ -198,7 +195,10 @@
         yAxis: {
             boundaryGap: [0, '50%'],
             type: 'value',
-            min: 0
+            min: 0,
+            axisLabel: {
+                formatter: '{value} Kbs'
+            }
         },
         series: [
             {
