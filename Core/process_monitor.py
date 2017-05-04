@@ -280,7 +280,6 @@ def process_state(name, limit=50):
     io_write_cnt = 0
     try:
         for key, proc_dao in target_running_process_dict.iteritems():
-            # print(proc_dao.pid, proc_dao.proc_uid)
             proc = proc_dao.process_bind
             with proc.oneshot():
                 memory_cnt += proc.memory_percent()
@@ -329,8 +328,8 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
     else:
         log_opt = 'day'
     t1 = time.localtime()
-    logFileName = log_file_name.log_file_name(opt=log_opt)
-    csv_f = CsvWriter(logFileName, path=log_path)
+    _logFileName = log_file_name.log_file_name(opt=log_opt)
+    csv_f = CsvWriter(_logFileName, path=log_path)
 
     while continue_flag is True:
         # logTempDict 为单次记录信息的项
@@ -340,8 +339,8 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
         # 时间
         td['Time'] = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime())
         # 全局CPU和内存状态
-        currentCpuState = get_cpu_state(interval=interval)
-        td['CPU_percent'] = currentCpuState
+        current_cpu_state = get_cpu_state(interval=interval)
+        td['CPU_percent'] = current_cpu_state
         global_memory_state = get_memory_state()
         td['memory_percent'], td['memory_used'], td['memory_total'] = global_memory_state
         # 获取网络IO状态
@@ -402,8 +401,8 @@ def monitor(share_queue, quit_event, email_event, config_dict=dict()):
             csv_f.close()
             zip_the_old_file(f_name.replace("csv", "zip"), f_name, log_path)
             t1 = t2  # Update t1
-            logFileName = log_file_name.log_file_name(opt=log_opt)
-            csv_f = CsvWriter(logFileName, path=log_path)
+            _logFileName = log_file_name.log_file_name(opt=log_opt)
+            csv_f = CsvWriter(_logFileName, path=log_path)
     return 0
 
 
