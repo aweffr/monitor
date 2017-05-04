@@ -82,7 +82,6 @@ def read_config(filename):
     d["smtp_server"] = cf.get("email", "smtp")
     d["send_interval"] = time_to_seconds(cf.get("email", "send_interval"))
 
-    d["target_process"] = cf.get("monitor", "target")
     d["process_name"] = parse_process_name(cf.get("monitor", "target"))
     d["memory_limit"] = float(cf.get("monitor", "memory_limit"))
     d["interval"] = float(cf.get("monitor", "interval", fallback='1.0'))

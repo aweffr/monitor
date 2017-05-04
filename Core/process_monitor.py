@@ -337,7 +337,7 @@ def send_warning_email_netio(config_dict, email_message_queue, email_event):
 def monitor(share_queue, quit_event, email_event, config_dict=dict()):
     global net_clock_start
     try:
-        target_process_name_list = config_dict["target_process"]
+        target_process_name_list = config_dict["process_name"]
         interval = config_dict["interval"]
         log_path = config_dict["log_path"]
         email_context = config_dict["email_context"]
