@@ -30,27 +30,7 @@ target_running_process_dict = {}
 alive_dict = {}
 
 MB_UNIT = 1024 * 1024
-
-
-# def find_jarfile_index(cmdline):
-#     for idx, param in enumerate(cmdline):
-#         if param.find("-jar") != -1:
-#             return idx + 1
-
-
-# def convert_to_abs_path(cwd, cmdline):
-#     """
-#     将jar包名改为绝对目录，并以此作为proc的id。
-#     :param cwd:
-#     :param cmdline:
-#     :return: cmdline[idx] 作为 proc_id
-#     """
-#     idx = find_jarfile_index(cmdline)
-#     if cmdline[idx].startswith('.'):
-#         cmdline[idx] = cmdline[idx].replace(".", cwd, 1).replace("\\", "/")
-#     elif (cmdline[idx].count("/") + cmdline[idx].count("\\")) == 0:
-#         cmdline[idx] = cwd.replace("\\", "/") + "/" + cmdline[idx]
-#     return cmdline[idx]
+KB_UNIT = 1024
 
 
 def parse_proc_id_tomcat(cwd):
@@ -141,15 +121,13 @@ class ProcDao(object):
 
     def get_tomcat_root(self):
         assert self.is_tomcat
-        tomcat_root = None
+        tomcat_root_path = None
         for command in self.cmdline:
             if command.find("-Dcatalina.home=") != -1:
-                # print("if command.find(‘-Dcatalina.home=’) != -1:", command)
-                tomcat_root = command.replace("-Dcatalina.home=", "").replace("\\", "/")
+                tomcat_root_path = command.replace("-Dcatalina.home=", "").replace("\\", "/")
                 break
-        assert tomcat_root is not None
-        # self.proc_uid = tomcat_root
-        return tomcat_root
+        assert tomcat_root_path is not None
+        return tomcat_root_path
 
     def get_jar_path(self):
         idx = None
@@ -232,26 +210,6 @@ def refresh_target_processes(target_process_name_list):
     return target_alive_process_list
 
 
-# def check_process_status_and_restart(target_name_list):
-#     global alive_dict
-#     for key in alive_dict.iterkeys():
-#         alive_dict[key][0] = False
-#     # Scan
-#     for proc in psutil.process_iter():
-#         if proc.name().lower() in target_name_list:
-#             tmp = ProcDao(proc)
-#             target_init_process_dict[tmp.proc_uid] = tmp
-#             alive_dict[tmp.proc_uid][0] = True
-#
-#     for proc_id, val in alive_dict.iteritems():
-#         running, path, typestr = val
-#         print(proc_id, running, path)
-#         if not running:
-#             if typestr == "tomcat":
-#                 psutil.Popen([path, ], cwd=proc_id, stdout=PIPE)
-#             if typestr == "jar":
-#                 psutil.Popen(["java", "-jar", path], stdout=PIPE)
-
 def check_process_status_and_restart(config_dict):
     global alive_dict
     global target_running_process_dict, target_init_process_dict
@@ -278,16 +236,6 @@ def get_memory_state():
     return global_memory_state
 
 
-#
-# def globalMemoryStateToString(globalMemoryState):
-#     currentMemoryPercent, currentMemoryUsed, currentMemoryTotal = globalMemoryState
-#     memoryLogString = "Memory: %4s%% %6s/%s" % (
-#         str(currentMemoryPercent),
-#         str(currentMemoryUsed) + "Mb",
-#         str(currentMemoryTotal) + "Mb"
-#     )
-#     return memoryLogString
-
 net_status_queue = deque(maxlen=50)
 
 
@@ -297,9 +245,10 @@ def get_network_state():
     :return: 类字典对象‘snetio’, 属性有'bytes_recv', 'bytes_sent', 'packets_recv', 'packets_sent'
     """
     global net_status_queue
-    io_state = psutil.net_io_counters(pernic=True)
-    assert 'eth0' in io_state
-    io_state = io_state['eth0']
+    io_state = psutil.net_io_counters(pernic=False)
+    # io_state = psutil.net_io_counters(pernic=True)
+    # assert 'eth0' in io_state
+    # io_state = io_state['eth0']
     bs, br = io_state.bytes_sent, io_state.bytes_recv
     tmp = (bs, br, time.time())
     net_status_queue.append(tmp)
@@ -308,6 +257,7 @@ def get_network_state():
         delta_time = tmp1[2] - tmp2[2]
         delta_sent = (tmp1[0] - tmp2[0] + 0.0) / delta_time
         delta_recv = (tmp1[1] - tmp2[1] + 0.0) / delta_time
+        delta_sent, delta_recv = delta_sent / KB_UNIT, delta_recv / KB_UNIT
     else:
         delta_sent, delta_recv = 0.0, 0.0
     return delta_sent, delta_recv
