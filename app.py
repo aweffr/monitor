@@ -65,6 +65,30 @@ def app_run(host, port):
         monitor_main.quitEvent.set()
 
 
+def monitor_run():
+    t1 = threading.Thread(target=monitor_main.run)
+    t1.run()
+    # 确保已经读取设置
+    while not monitor_main.configLoadComplete[0]:
+        time.sleep(1)
+
+    d = monitor_main.configDict
+    t2 = threading.Thread(
+        target=app_run,
+        kwargs={'host': d['host'], 'port': d['port']})
+    t2.run()
+
+    try:
+        t1.join()
+        t2.join()
+    except Exception as e:
+        print('Error happens at t1.join() or t2.join()', e)
+        if monitor_main.debug_file is not None:
+            monitor_main.debug_file.close()
+    finally:
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     t1 = threading.Thread(target=monitor_main.run)
     t1.run()
