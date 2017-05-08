@@ -26,10 +26,10 @@
 - 手动:
     - 若自动安装出错，可在程序根目录的shell下执行以下命令:
     - 1.安装依赖:
-        - pip install virtualenv # virtualenv用于克隆python
-        - virtualenv ./env       # 创建本地克隆的python环境env。
+        - pip install virtualenv      # virtualenv用于克隆python
+        - virtualenv ./env            # 创建本地克隆的python环境env。
         - source ./env/bin/activate # 本步骤用于将python启动路径劫持为本程序下env所在的python
         - pip install -r ./requirements.txt
     - 2.运行:
-        - source ./env/bin/activate # 激活本地python环境
-        - nohup python app.py > out_log &
+        - dir=...                     #指定程序根目录
+        - nohup ${dir}/env/bin/python ${dir}/bootstrap.py > out_log 2>&1 &
