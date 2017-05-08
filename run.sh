@@ -1,3 +1,3 @@
 #!/bin/bash
-source ./env/bin/activate
-python app.py > out_log &
+dir=/usr/local/huami/python2.7
+nohup ${dir}/env/bin/python ${dir}/app.py > out_log 2>&1 &
