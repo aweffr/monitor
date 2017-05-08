@@ -9,7 +9,5 @@ if __name__ == "__main__":
     os.chdir(cwd)
     print("Now cwd is:", os.getcwd())
 
-    f = open('success.log', 'w')
-    f.close()
     import app
     app.monitor_run()
